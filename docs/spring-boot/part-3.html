@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Step 3 — Your First Spring Boot App · Spring Boot</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Fraunces:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f1117;
+    --surface: #161b27;
+    --surface2: #1e2535;
+    --border: #2a3147;
+    --text: #e8eaf0;
+    --muted: #7b8499;
+    --faint: #3d4560;
+    --green: #4ade80;
+    --green-dim: #1a3d2b;
+    --green-text: #86efac;
+    --amber: #fbbf24;
+    --amber-dim: #3d2e08;
+    --blue: #60a5fa;
+    --blue-dim: #0f2040;
+    --coral: #f87171;
+    --coral-dim: #3d1212;
+    --purple: #a78bfa;
+    --purple-dim: #1e1440;
+    --teal: #2dd4bf;
+    --teal-dim: #0d2e2a;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Fraunces', Georgia, serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.75;
+  }
+
+  /* ── top bar ── */
+  .topbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 40px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .back-link {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: .05em;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: color .15s;
+  }
+  .back-link:hover { color: var(--green); }
+  .topbar-sep { color: var(--faint); font-size: 13px; }
+  .step-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: var(--green-dim);
+    color: var(--green);
+    border: 1px solid var(--green);
+    border-radius: 4px;
+    padding: 2px 8px;
+    letter-spacing: .05em;
+  }
+  .topbar-title {
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--muted);
+  }
+  .topbar-title strong { color: var(--text); font-weight: 400; }
+
+  /* ── layout ── */
+  .page { max-width: 860px; margin: 0 auto; padding: 60px 40px 120px; }
+
+  /* ── hero ── */
+  .hero { margin-bottom: 60px; }
+  .hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--green);
+    letter-spacing: .1em;
+    margin-bottom: 14px;
+  }
+  .hero h1 {
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 300;
+    line-height: 1.15;
+    letter-spacing: -.02em;
+    margin-bottom: 20px;
+  }
+  .hero h1 em { font-style: italic; color: var(--muted); }
+  .hero-lead {
+    font-size: 18px;
+    font-weight: 300;
+    color: var(--muted);
+    max-width: 560px;
+    line-height: 1.8;
+  }
+  .hero-lead strong { color: var(--text); font-weight: 400; }
+
+  /* ── section ── */
+  .section { margin-bottom: 64px; }
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  h2 { font-size: 24px; font-weight: 400; margin-bottom: 16px; letter-spacing: -.01em; }
+  p { color: var(--muted); margin-bottom: 14px; font-size: 16px; }
+  p strong { color: var(--text); font-weight: 400; }
+
+  /* ── initializr mock ── */
+  .initializr-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .initializr-topbar {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; }
+  .dot-y { background: #febc2e; }
+  .dot-g { background: #28c840; }
+  .initializr-topbar span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    margin-left: 8px;
+  }
+  .initializr-body { padding: 24px 28px; display: flex; flex-direction: column; gap: 20px; }
+
+  .init-row { display: grid; grid-template-columns: 160px 1fr; gap: 16px; align-items: center; }
+  .init-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: .06em;
+  }
+  .init-options { display: flex; gap: 8px; flex-wrap: wrap; }
+  .init-opt {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .init-opt:hover { border-color: var(--faint); color: var(--text); }
+  .init-opt.selected { border-color: var(--green); background: var(--green-dim); color: var(--green); }
+
+  .init-field {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--green-text);
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .dep-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .dep-tag.active { background: var(--blue-dim); border: 1px solid var(--blue); color: var(--blue); }
+  .dep-tag.inactive { background: var(--surface2); border: 1px solid var(--border); color: var(--muted); }
+  .dep-tag .dep-x { font-size: 10px; opacity: .6; }
+
+  .init-generate {
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .generate-btn {
+    background: var(--green);
+    color: #0a1f14;
+    border: none;
+    border-radius: 8px;
+    padding: 11px 22px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: .03em;
+    transition: opacity .15s;
+  }
+  .generate-btn:hover { opacity: .85; }
+  .generate-note {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .dep-detail {
+    background: var(--surface2);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+    min-height: 52px;
+    margin-top: 8px;
+    transition: all .2s;
+    font-family: 'Fraunces', serif;
+  }
+  .dep-detail strong { color: var(--text); font-weight: 400; }
+
+  /* ── code block ── */
+  .code-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 22px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.9;
+    overflow-x: auto;
+    margin-bottom: 16px;
+  }
+  .code-block.surface2 { background: var(--surface2); }
+  .c-ann    { color: var(--amber); }
+  .c-kw     { color: var(--coral); }
+  .c-type   { color: var(--blue); }
+  .c-str    { color: var(--green-text); }
+  .c-method { color: var(--green); }
+  .c-comment { color: var(--faint); font-style: italic; }
+  .c-tag    { color: var(--blue); }
+  .c-attr   { color: var(--purple); }
+  .c-val    { color: var(--amber); }
+  .c-num    { color: var(--teal); }
+
+  /* ── annotation breakdown ── */
+  .ann-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 16px;
+  }
+  .ann-top {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .ann-pill {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--amber);
+    background: var(--amber-dim);
+    border: 1px solid var(--amber);
+    border-radius: 8px;
+    padding: 8px 20px;
+  }
+  .ann-equals {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--faint);
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  .ann-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+  .ann-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 14px;
+    cursor: pointer;
+    transition: border-color .15s, transform .12s;
+    text-align: center;
+  }
+  .ann-card:hover { transform: translateY(-2px); }
+  .ann-card.active { border-color: var(--amber); }
+  .ann-card-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--amber);
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+  .ann-card-short { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .ann-detail {
+    background: var(--surface2);
+    border-radius: 8px;
+    padding: 16px 18px;
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.75;
+    min-height: 60px;
+    font-family: 'Fraunces', serif;
+  }
+  .ann-detail strong { color: var(--text); font-weight: 400; }
+  .ann-detail .detail-ann { color: var(--amber); font-family: 'JetBrains Mono', monospace; font-size: 12px; margin-bottom: 8px; }
+
+  /* ── terminal / startup log ── */
+  .terminal-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .terminal-topbar {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .terminal-topbar span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    margin-left: 8px;
+  }
+  .terminal-body { padding: 0; }
+
+  /* run command block */
+  .run-cmd {
+    padding: 20px 22px;
+    border-bottom: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.9;
+  }
+  .run-cmd .prompt { color: var(--faint); }
+  .run-cmd .cmd { color: var(--green-text); }
+
+  /* startup log lines */
+  .log-ascii {
+    padding: 16px 22px 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--faint);
+    line-height: 1.4;
+    border-bottom: 1px solid var(--border);
+  }
+  .log-ascii .ascii-green { color: var(--green); }
+  .log-ascii .ascii-version { color: var(--amber); font-size: 12px; }
+
+  .log-line {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    padding: 9px 22px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background .12s;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .log-line:last-child { border-bottom: none; }
+  .log-line:hover { background: var(--surface2); }
+  .log-line.active { background: var(--green-dim); }
+  .log-time { color: var(--faint); flex-shrink: 0; margin-right: 10px; }
+  .log-level { flex-shrink: 0; margin-right: 10px; }
+  .log-level.info { color: var(--green); }
+  .log-level.warn { color: var(--amber); }
+  .log-text { color: var(--muted); flex: 1; min-width: 0; }
+  .log-line.active .log-text { color: var(--green-text); }
+  .log-highlight { color: var(--amber); }
+  .log-badge {
+    font-size: 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 6px;
+    color: var(--faint);
+    flex-shrink: 0;
+    margin-left: 10px;
+    align-self: center;
+  }
+  .log-line.active .log-badge { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+
+  /* log explainer */
+  .log-explainer {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 22px;
+    min-height: 72px;
+    margin-bottom: 16px;
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.75;
+    font-family: 'Fraunces', serif;
+    transition: all .2s;
+  }
+  .log-explainer strong { color: var(--text); font-weight: 400; }
+  .log-explainer .expl-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--green);
+    letter-spacing: .08em;
+    margin-bottom: 8px;
+  }
+
+  /* ── request block ── */
+  .request-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .request-tabs { display: flex; border-bottom: 1px solid var(--border); }
+  .request-tab {
+    padding: 11px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    transition: all .15s;
+    letter-spacing: .04em;
+  }
+  .request-tab:hover { color: var(--text); background: var(--surface2); }
+  .request-tab.active { color: var(--teal); background: var(--teal-dim); }
+  .request-body { padding: 22px; }
+  .request-panel { display: none; }
+  .request-panel.active { display: block; }
+
+  .http-method {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 4px;
+    background: var(--blue-dim);
+    color: var(--blue);
+    border: 1px solid var(--blue);
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+  .http-url {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--green-text);
+    vertical-align: middle;
+  }
+  .http-response {
+    margin-top: 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .http-resp-header {
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .status-code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .status-404 { color: var(--amber); }
+  .status-200 { color: var(--green); }
+  .status-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); }
+  .http-resp-body {
+    padding: 14px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+  .json-key   { color: var(--blue); }
+  .json-str   { color: var(--green-text); }
+  .json-num   { color: var(--amber); }
+  .json-bool  { color: var(--coral); }
+
+  /* ── callout ── */
+  .callout {
+    border-radius: 10px;
+    padding: 18px 22px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+  .callout-green { background: var(--green-dim); border: 1px solid var(--green); }
+  .callout-amber { background: var(--amber-dim); border: 1px solid var(--amber); }
+  .callout-blue  { background: var(--blue-dim);  border: 1px solid var(--blue); }
+  .callout-teal  { background: var(--teal-dim);  border: 1px solid var(--teal); }
+  .callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 2px; }
+  .callout-text { font-size: 15px; line-height: 1.7; font-family: 'Fraunces', serif; }
+  .callout-green .callout-text { color: var(--green-text); }
+  .callout-amber .callout-text { color: var(--amber); }
+  .callout-blue  .callout-text { color: var(--blue); }
+  .callout-teal  .callout-text { color: var(--teal); }
+  .callout-text strong { font-weight: 600; }
+
+  /* ── CTA ── */
+  .cta {
+    margin-top: 64px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 32px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .cta-left h3 { font-size: 20px; font-weight: 300; margin-bottom: 6px; }
+  .cta-left p  { font-size: 14px; color: var(--muted); margin: 0; }
+  .cta-btn {
+    background: var(--green);
+    color: #0a1f14;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    letter-spacing: .03em;
+    transition: opacity .15s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .cta-btn:hover { opacity: .85; }
+
+  /* ── progress bar ── */
+  .progress-bar {
+    width: 100%;
+    height: 3px;
+    background: var(--surface2);
+    margin-bottom: 40px;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 30%;
+    background: linear-gradient(90deg, var(--green) 0%, var(--teal) 100%);
+    border-radius: 2px;
+  }
+
+  @media (max-width: 600px) {
+    .page { padding: 32px 20px 80px; }
+    .topbar { padding: 12px 20px; }
+    .init-row { grid-template-columns: 1fr; gap: 8px; }
+    .ann-cards { grid-template-columns: 1fr; }
+    .cta { flex-direction: column; }
+    .request-tabs { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+
+<!-- top bar -->
+<div class="topbar">
+  <a class="back-link" href="index.html">← All Parts</a>
+  <span class="topbar-sep">/</span>
+  <span class="step-badge">STEP 3 / 10</span>
+  <span class="topbar-title">Spring Boot &nbsp;·&nbsp; <strong>Your First Spring Boot App</strong></span>
+</div>
+
+<div class="page">
+
+  <!-- progress -->
+  <div class="progress-bar"><div class="progress-fill"></div></div>
+
+  <!-- hero -->
+  <div class="hero">
+    <div class="hero-eyebrow">STEP 3 — FIRST APP</div>
+    <h1>Generate. Run.<br /><em>Understand.</em></h1>
+    <p class="hero-lead">You'll create a real Spring Boot project, run it, and read its startup logs line by line — until <strong>nothing feels like magic</strong> anymore.</p>
+  </div>
+
+  <!-- section 1: Spring Initializr -->
+  <div class="section">
+    <div class="section-label">Generate the project</div>
+    <h2>Spring Initializr — your project generator</h2>
+    <p>Nobody creates a Spring Boot project from scratch. You use <strong>Spring Initializr</strong> — a web tool that generates a ready-to-run project skeleton. Configure it below the way we will for this course, then we'll look at what it creates.</p>
+    <p>Go to <strong>start.spring.io</strong> in your browser and match these settings exactly.</p>
+
+    <div class="initializr-wrap">
+      <div class="initializr-topbar">
+        <div class="dot dot-r"></div>
+        <div class="dot dot-y"></div>
+        <div class="dot dot-g"></div>
+        <span>start.spring.io — Spring Initializr</span>
+      </div>
+      <div class="initializr-body">
+
+        <div class="init-row">
+          <div class="init-label">Project</div>
+          <div class="init-options">
+            <div class="init-opt selected" onclick="pickOpt(this)">Maven</div>
+            <div class="init-opt" onclick="pickOpt(this)">Gradle – Groovy</div>
+            <div class="init-opt" onclick="pickOpt(this)">Gradle – Kotlin</div>
+          </div>
+        </div>
+
+        <div class="init-row">
+          <div class="init-label">Language</div>
+          <div class="init-options">
+            <div class="init-opt selected" onclick="pickOpt(this)">Java</div>
+            <div class="init-opt" onclick="pickOpt(this)">Kotlin</div>
+            <div class="init-opt" onclick="pickOpt(this)">Groovy</div>
+          </div>
+        </div>
+
+        <div class="init-row">
+          <div class="init-label">Spring Boot</div>
+          <div class="init-options">
+            <div class="init-opt selected" onclick="pickOpt(this)">3.3.x</div>
+            <div class="init-opt" onclick="pickOpt(this)">3.2.x</div>
+          </div>
+        </div>
+
+        <div class="init-row">
+          <div class="init-label">Group</div>
+          <input class="init-field" value="com.shop" readonly />
+        </div>
+
+        <div class="init-row">
+          <div class="init-label">Artifact</div>
+          <input class="init-field" value="my-shop" readonly />
+        </div>
+
+        <div class="init-row">
+          <div class="init-label">Java</div>
+          <div class="init-options">
+            <div class="init-opt selected" onclick="pickOpt(this)">21</div>
+            <div class="init-opt" onclick="pickOpt(this)">17</div>
+          </div>
+        </div>
+
+        <div class="init-row">
+          <div class="init-label">Dependencies</div>
+          <div style="flex:1">
+            <div class="init-options" style="margin-bottom:10px">
+              <div class="dep-tag active" onclick="toggleDep(this)" data-dep="web">
+                Spring Web <span class="dep-x">✕</span>
+              </div>
+              <div class="dep-tag inactive" onclick="toggleDep(this)" data-dep="jpa">
+                + Spring Data JPA
+              </div>
+              <div class="dep-tag inactive" onclick="toggleDep(this)" data-dep="h2">
+                + H2 Database
+              </div>
+            </div>
+            <div class="dep-detail" id="dep-detail">
+              <strong>Spring Web</strong> — adds Spring MVC, Jackson (for JSON), and an embedded Tomcat server. This is the starter you need to build REST APIs. Click any dependency tag above to see what it includes.
+            </div>
+          </div>
+        </div>
+
+        <div class="init-generate">
+          <button class="generate-btn" onclick="showGenerate()">⬇ Generate</button>
+          <span class="generate-note">downloads my-shop.zip — extract it and open in IntelliJ</span>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="callout callout-teal">
+      <span class="callout-icon">💡</span>
+      <div class="callout-text">For now, <strong>only add Spring Web</strong>. We'll add JPA and H2 in Step 8 when we need them. Adding too many starters upfront just creates noise before you're ready.</div>
+    </div>
+  </div>
+
+  <!-- section 2: what was generated -->
+  <div class="section">
+    <div class="section-label">The generated code</div>
+    <h2>One class. One annotation. That's the whole app.</h2>
+    <p>Unzip the download, open it in IntelliJ, and look at the only Java file Initializr generated. It's smaller than you expect.</p>
+
+    <div class="code-block">
+<span class="c-comment">// src/main/java/com/shop/MyShopApplication.java</span>
+
+<span class="c-ann">@SpringBootApplication</span>
+<span class="c-kw">public class</span> <span class="c-type">MyShopApplication</span> {
+
+    <span class="c-kw">public static void</span> <span class="c-method">main</span>(<span class="c-type">String</span>[] args) {
+        <span class="c-type">SpringApplication</span>.<span class="c-method">run</span>(<span class="c-type">MyShopApplication</span>.<span class="c-kw">class</span>, args);
+    }
+
+}</div>
+
+    <p>That's the entire app. <code style="font-family:'JetBrains Mono',monospace;color:var(--amber)">@SpringBootApplication</code> does all the heavy lifting. Click each part below to understand what it actually means.</p>
+
+    <div class="ann-wrap">
+      <div class="ann-top">
+        <div class="ann-pill">@SpringBootApplication</div>
+      </div>
+      <div class="ann-equals">is shorthand for three annotations combined:</div>
+      <div class="ann-cards">
+        <div class="ann-card" data-ann="config" onclick="selectAnn(this)">
+          <div class="ann-card-name">@SpringBoot­Configuration</div>
+          <div class="ann-card-short">Marks this class as a source of bean definitions</div>
+        </div>
+        <div class="ann-card" data-ann="autoconfig" onclick="selectAnn(this)">
+          <div class="ann-card-name">@EnableAuto­Configuration</div>
+          <div class="ann-card-short">Turns on Spring Boot's auto-configuration engine</div>
+        </div>
+        <div class="ann-card" data-ann="scan" onclick="selectAnn(this)">
+          <div class="ann-card-name">@Component­Scan</div>
+          <div class="ann-card-short">Finds all your classes annotated with Spring annotations</div>
+        </div>
+      </div>
+      <div class="ann-detail" id="ann-detail">
+        <em style="color:var(--faint)">← Click a card to see what each annotation does.</em>
+      </div>
+    </div>
+
+    <div class="callout callout-amber">
+      <span class="callout-icon">⚡</span>
+      <div class="callout-text">You almost <strong>never need to split these three apart</strong>. Use <code style="font-family:'JetBrains Mono',monospace">@SpringBootApplication</code> and forget the internals — unless you need to disable auto-configuration for a specific class (rare, advanced).</div>
+    </div>
+  </div>
+
+  <!-- section 3: run it -->
+  <div class="section">
+    <div class="section-label">Run the app</div>
+    <h2>One command to boot everything</h2>
+    <p>Open a terminal, navigate into your project folder, and run the Maven Spring Boot plugin. IntelliJ also has a green Run button — both work identically.</p>
+
+    <div class="terminal-wrap">
+      <div class="terminal-topbar">
+        <div class="dot dot-r"></div>
+        <div class="dot dot-y"></div>
+        <div class="dot dot-g"></div>
+        <span>terminal — my-shop/</span>
+      </div>
+      <div class="terminal-body">
+        <div class="run-cmd">
+          <span class="prompt">$ </span><span class="cmd">mvn spring-boot:run</span>
+        </div>
+        <div class="log-ascii">
+<span class="ascii-green">  .   ____          _            __ _ _</span>
+<span class="ascii-green"> /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \</span>
+<span class="ascii-green">( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \</span>
+<span class="ascii-green"> \\/  ___)| |_)| | | | | || (_| |  ) ) ) )</span>
+<span class="ascii-green">  '  |____| .__|_| |_|_| |_\__, | / / / /</span>
+<span class="ascii-green"> =========|_|==============|___/=/_/_/_/</span>
+ :: Spring Boot ::  <span class="ascii-version">             (v3.3.0)</span>
+        </div>
+
+        <div class="log-line" data-log="starting" onclick="selectLog(this)">
+          <span class="log-time">10:23:45.012</span>
+          <span class="log-level info">INFO</span>
+          <span class="log-text">Starting <span class="log-highlight">MyShopApplication</span> using Java 21 with PID 48291</span>
+          <span class="log-badge">click to explain</span>
+        </div>
+        <div class="log-line" data-log="profile" onclick="selectLog(this)">
+          <span class="log-time">10:23:45.016</span>
+          <span class="log-level info">INFO</span>
+          <span class="log-text">No active profile set, falling back to 1 default profile: <span class="log-highlight">"default"</span></span>
+          <span class="log-badge">click to explain</span>
+        </div>
+        <div class="log-line" data-log="tomcat-init" onclick="selectLog(this)">
+          <span class="log-time">10:23:46.201</span>
+          <span class="log-level info">INFO</span>
+          <span class="log-text">Tomcat initialized with port <span class="log-highlight">8080</span> (http)</span>
+          <span class="log-badge">click to explain</span>
+        </div>
+        <div class="log-line" data-log="context" onclick="selectLog(this)">
+          <span class="log-time">10:23:46.890</span>
+          <span class="log-level info">INFO</span>
+          <span class="log-text">Root WebApplicationContext: initialization completed in <span class="log-highlight">1243 ms</span></span>
+          <span class="log-badge">click to explain</span>
+        </div>
+        <div class="log-line" data-log="tomcat-start" onclick="selectLog(this)">
+          <span class="log-time">10:23:47.112</span>
+          <span class="log-level info">INFO</span>
+          <span class="log-text">Tomcat started on port <span class="log-highlight">8080</span> (http) with context path '/'</span>
+          <span class="log-badge">click to explain</span>
+        </div>
+        <div class="log-line" data-log="started" onclick="selectLog(this)">
+          <span class="log-time">10:23:47.198</span>
+          <span class="log-level info">INFO</span>
+          <span class="log-text">Started <span class="log-highlight">MyShopApplication</span> in <span class="log-highlight">2.341 seconds</span> (process running for 2.6)</span>
+          <span class="log-badge">click to explain</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="log-explainer" id="log-explainer">
+      <em style="color:var(--faint)">← Click any log line above to understand what it means.</em>
+    </div>
+
+    <div class="callout callout-blue">
+      <span class="callout-icon">⏱</span>
+      <div class="callout-text">A cold start in <strong>2–3 seconds</strong> is normal for a minimal app. As you add more beans and features, expect 5–10 seconds. IntelliJ's built-in runner uses the same JVM you already started, so subsequent runs are faster — use <strong>Ctrl+F5</strong> to restart without closing.</div>
+    </div>
+  </div>
+
+  <!-- section 4: verify -->
+  <div class="section">
+    <div class="section-label">Verify it's running</div>
+    <h2>Make your first HTTP request</h2>
+    <p>Your app is live on port 8080. Try hitting it — but read the response carefully. The 404 you'll get is actually <strong>good news</strong>.</p>
+
+    <div class="request-wrap">
+      <div class="request-tabs">
+        <button class="request-tab active" onclick="selectReq('browser')">🌐 Browser</button>
+        <button class="request-tab" onclick="selectReq('curl')">curl</button>
+        <button class="request-tab" onclick="selectReq('http')">HTTPie</button>
+      </div>
+      <div class="request-body">
+
+        <div class="request-panel active" id="req-browser">
+          <p style="margin-bottom:14px;font-size:14px">Open your browser and navigate to:</p>
+          <div style="margin-bottom:16px">
+            <span class="http-method">GET</span>
+            <span class="http-url">http://localhost:8080</span>
+          </div>
+          <div class="http-response">
+            <div class="http-resp-header">
+              <span class="status-code status-404">404</span>
+              <span class="status-label">Not Found</span>
+            </div>
+            <div class="http-resp-body">
+{<br />
+&nbsp;&nbsp;<span class="json-key">"timestamp"</span>: <span class="json-str">"2024-01-15T10:23:52.000+00:00"</span>,<br />
+&nbsp;&nbsp;<span class="json-key">"status"</span>: <span class="json-num">404</span>,<br />
+&nbsp;&nbsp;<span class="json-key">"error"</span>: <span class="json-str">"Not Found"</span>,<br />
+&nbsp;&nbsp;<span class="json-key">"path"</span>: <span class="json-str">"/"</span><br />
+}
+            </div>
+          </div>
+        </div>
+
+        <div class="request-panel" id="req-curl">
+          <div class="code-block" style="margin-bottom:16px">
+<span style="color:var(--faint)">$</span> <span style="color:var(--green-text)">curl -i http://localhost:8080</span>
+          </div>
+          <div class="http-response">
+            <div class="http-resp-header">
+              <span class="status-code status-404">HTTP/1.1 404</span>
+              <span class="status-label">Not Found</span>
+            </div>
+            <div class="http-resp-body">
+Content-Type: application/json<br />
+<br />
+{<span class="json-key">"timestamp"</span>:<span class="json-str">"2024-01-15T10:23:52.000+00:00"</span>,<br />
+&nbsp;<span class="json-key">"status"</span>:<span class="json-num">404</span>,<span class="json-key">"error"</span>:<span class="json-str">"Not Found"</span>,<br />
+&nbsp;<span class="json-key">"path"</span>:<span class="json-str">"/"</span>}
+            </div>
+          </div>
+        </div>
+
+        <div class="request-panel" id="req-http">
+          <div class="code-block" style="margin-bottom:16px">
+<span style="color:var(--faint)">$</span> <span style="color:var(--green-text)">http GET localhost:8080</span>
+          </div>
+          <div class="http-response">
+            <div class="http-resp-header">
+              <span class="status-code status-404">HTTP/1.1 404 Not Found</span>
+            </div>
+            <div class="http-resp-body">
+{<br />
+&nbsp;&nbsp;<span class="json-key">"error"</span>: <span class="json-str">"Not Found"</span>,<br />
+&nbsp;&nbsp;<span class="json-key">"path"</span>: <span class="json-str">"/"</span>,<br />
+&nbsp;&nbsp;<span class="json-key">"status"</span>: <span class="json-num">404</span>,<br />
+&nbsp;&nbsp;<span class="json-key">"timestamp"</span>: <span class="json-str">"2024-01-15T10:23:52.000+00:00"</span><br />
+}
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="callout callout-green">
+      <span class="callout-icon">✅</span>
+      <div class="callout-text"><strong>A 404 from Spring Boot is success.</strong> It means the server is running and received your request — it just has no endpoint mapped to <code style="font-family:'JetBrains Mono',monospace">/</code> yet. Spring Boot even formats the error as JSON automatically. A "connection refused" would mean the server didn't start. A 404 means it did.</div>
+    </div>
+
+    <div class="callout callout-amber">
+      <span class="callout-icon">🚫</span>
+      <div class="callout-text"><strong>Port 8080 already in use?</strong> Something else is running on that port. Either stop it, or add <code style="font-family:'JetBrains Mono',monospace">server.port=8081</code> to <code style="font-family:'JetBrains Mono',monospace">src/main/resources/application.properties</code> and restart.</div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta">
+    <div class="cta-left">
+      <h3>Ready for Step 4?</h3>
+      <p>How Spring Boot actually works under the hood — auto-configuration, starters, and the IoC container explained simply.</p>
+    </div>
+    <a class="cta-btn" href="part-4.html">Step 4 — How Spring Boot Works →</a>
+  </div>
+
+</div>
+
+<script>
+// ── Initializr option picker ──
+function pickOpt(el) {
+  const siblings = el.parentElement.querySelectorAll('.init-opt');
+  siblings.forEach(s => s.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+// ── Dependency tags ──
+const depDetails = {
+  web: '<strong>Spring Web</strong> — includes Spring MVC (the web framework), Jackson (JSON serialization), and an embedded Tomcat server. Everything you need to build REST APIs. This is the only starter we need right now.',
+  jpa: '<strong>Spring Data JPA</strong> — adds Hibernate (the ORM) and Spring Data repositories. Lets you talk to a relational database using Java objects instead of raw SQL. We add this in Step 8.',
+  h2:  '<strong>H2 Database</strong> — an in-memory database that lives inside your JVM. Perfect for development and testing because it requires zero installation. We add this alongside JPA in Step 8.',
+};
+
+function toggleDep(el) {
+  const dep = el.dataset.dep;
+  const isActive = el.classList.contains('active');
+
+  if (dep === 'web') {
+    document.getElementById('dep-detail').innerHTML = depDetails.web;
+    return;
+  }
+
+  el.classList.toggle('active');
+  el.classList.toggle('inactive');
+
+  if (!isActive) {
+    el.innerHTML = el.textContent.trim().replace('+ ', '') + ' <span class="dep-x">✕</span>';
+    document.getElementById('dep-detail').innerHTML = depDetails[dep];
+  } else {
+    el.innerHTML = '+ ' + el.textContent.replace('✕', '').trim();
+    document.getElementById('dep-detail').innerHTML = depDetails.web;
+  }
+}
+
+function showGenerate() {
+  const btn = document.querySelector('.generate-btn');
+  btn.textContent = '✓ Generated!';
+  btn.style.background = 'var(--teal)';
+  setTimeout(() => {
+    btn.textContent = '⬇ Generate';
+    btn.style.background = '';
+  }, 2000);
+}
+
+// ── @SpringBootApplication breakdown ──
+const annDetails = {
+  config: {
+    label: '@SpringBootConfiguration',
+    body: 'Tells Spring that <strong>this class can define beans</strong> — objects that Spring manages for you. It\'s a specialised version of <code style="font-family:\'JetBrains Mono\',monospace;color:var(--amber)">@Configuration</code>. The difference is that Spring Boot only allows one <code>@SpringBootConfiguration</code> per application, which prevents you from accidentally having two conflicting entry points.',
+  },
+  autoconfig: {
+    label: '@EnableAutoConfiguration',
+    body: 'This is the magic switch. It tells Spring Boot to <strong>look at what\'s on your classpath and configure things automatically</strong>. Added <code style="font-family:\'JetBrains Mono\',monospace;color:var(--green-text)">spring-boot-starter-web</code>? Spring Boot configures Tomcat, Spring MVC, and Jackson without a single line of config from you. It does this using <code>@ConditionalOnClass</code> checks under the hood.',
+  },
+  scan: {
+    label: '@ComponentScan',
+    body: 'Tells Spring to <strong>scan the current package and all sub-packages</strong> for classes annotated with <code style="font-family:\'JetBrains Mono\',monospace;color:var(--amber)">@Controller</code>, <code>@Service</code>, <code>@Repository</code>, <code>@Component</code>, etc. When it finds them, it creates instances and registers them as beans. This is why your <code>ProductController</code> in <code>com.shop.controller</code> gets picked up automatically — it lives in a sub-package of <code>com.shop</code>.',
+  },
+};
+
+function selectAnn(card) {
+  document.querySelectorAll('.ann-card').forEach(c => c.classList.remove('active'));
+  card.classList.add('active');
+  const d = annDetails[card.dataset.ann];
+  document.getElementById('ann-detail').innerHTML =
+    `<div class="detail-ann">${d.label}</div>${d.body}`;
+}
+
+// ── Startup log explainer ──
+const logDetails = {
+  starting: {
+    label: 'APPLICATION BOOTSTRAP',
+    body: 'Spring Boot found your <strong>main class</strong> and called <code style="font-family:\'JetBrains Mono\',monospace;color:var(--green-text)">SpringApplication.run()</code>. The bootstrap phase begins: it determines the app type (web vs. non-web), loads configuration, and prepares to create the application context.',
+  },
+  profile: {
+    label: 'PROFILES',
+    body: '<strong>Profiles</strong> let you have different configurations for different environments — <code>dev</code>, <code>test</code>, <code>prod</code>. Since you haven\'t set one, Spring Boot falls back to the <code>"default"</code> profile, loading <code>application.properties</code>. You activate a profile with <code style="font-family:\'JetBrains Mono\',monospace;color:var(--green-text)">--spring.profiles.active=prod</code> at startup.',
+  },
+  'tomcat-init': {
+    label: 'EMBEDDED TOMCAT',
+    body: 'Spring Boot started an <strong>embedded Tomcat web server</strong> on port 8080. This is the server that will receive all HTTP requests and route them to your controllers. The default port is 8080 — change it with <code style="font-family:\'JetBrains Mono\',monospace;color:var(--green-text)">server.port=9090</code> in <code>application.properties</code>.',
+  },
+  context: {
+    label: 'APPLICATION CONTEXT',
+    body: 'The <strong>Application Context</strong> is Spring\'s IoC container — the registry of all your beans. "Initialization completed in 1243 ms" means Spring found all your <code>@Component</code>/<code>@Service</code>/<code>@Controller</code> classes, instantiated them, and injected their dependencies. For a minimal app, this is fast. The time grows as you add more beans.',
+  },
+  'tomcat-start': {
+    label: 'SERVER READY',
+    body: 'Tomcat is now <strong>actively listening for HTTP connections on port 8080</strong>. The <code>context path \'/'</code> means your endpoints are served from the root — <code>localhost:8080/products</code>, not <code>localhost:8080/my-shop/products</code>. Change the context path with <code style="font-family:\'JetBrains Mono\',monospace;color:var(--green-text)">server.servlet.context-path=/api</code>.',
+  },
+  started: {
+    label: 'FULLY STARTED',
+    body: 'Your application is <strong>completely ready</strong>. Every bean is wired, Tomcat is listening, and the context is warm. The 2.3 seconds is the wall-clock time from process start to ready. This is the line you wait for before testing — anything before it and you might get "connection refused".',
+  },
+};
+
+function selectLog(line) {
+  document.querySelectorAll('.log-line').forEach(l => l.classList.remove('active'));
+  line.classList.add('active');
+  const d = logDetails[line.dataset.log];
+  if (d) {
+    document.getElementById('log-explainer').innerHTML =
+      `<div class="expl-label">${d.label}</div>${d.body}`;
+  }
+}
+
+// ── Request tabs ──
+function selectReq(tab) {
+  document.querySelectorAll('.request-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.request-panel').forEach(p => p.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  document.getElementById('req-' + tab).classList.add('active');
+}
+</script>
+</body>
+</html>

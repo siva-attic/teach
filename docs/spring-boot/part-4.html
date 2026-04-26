@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Step 4 — How Spring Boot Works · Spring Boot</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Fraunces:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f1117;
+    --surface: #161b27;
+    --surface2: #1e2535;
+    --border: #2a3147;
+    --text: #e8eaf0;
+    --muted: #7b8499;
+    --faint: #3d4560;
+    --green: #4ade80;
+    --green-dim: #1a3d2b;
+    --green-text: #86efac;
+    --amber: #fbbf24;
+    --amber-dim: #3d2e08;
+    --blue: #60a5fa;
+    --blue-dim: #0f2040;
+    --coral: #f87171;
+    --coral-dim: #3d1212;
+    --purple: #a78bfa;
+    --purple-dim: #1e1440;
+    --teal: #2dd4bf;
+    --teal-dim: #0d2e2a;
+  }
+
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Fraunces', Georgia, serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.75; }
+
+  .topbar { display: flex; align-items: center; gap: 10px; padding: 14px 40px; border-bottom: 1px solid var(--border); background: var(--surface); position: sticky; top: 0; z-index: 100; }
+  .back-link { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); text-decoration: none; letter-spacing: .05em; display: flex; align-items: center; gap: 5px; transition: color .15s; }
+  .back-link:hover { color: var(--green); }
+  .topbar-sep { color: var(--faint); font-size: 13px; }
+  .step-badge { font-family: 'JetBrains Mono', monospace; font-size: 11px; background: var(--green-dim); color: var(--green); border: 1px solid var(--green); border-radius: 4px; padding: 2px 8px; letter-spacing: .05em; }
+  .topbar-title { font-family: 'Fraunces', serif; font-size: 15px; font-weight: 300; color: var(--muted); }
+  .topbar-title strong { color: var(--text); font-weight: 400; }
+
+  .page { max-width: 860px; margin: 0 auto; padding: 60px 40px 120px; }
+
+  .hero { margin-bottom: 60px; }
+  .hero-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--green); letter-spacing: .1em; margin-bottom: 14px; }
+  .hero h1 { font-size: clamp(32px, 5vw, 52px); font-weight: 300; line-height: 1.15; letter-spacing: -.02em; margin-bottom: 20px; }
+  .hero h1 em { font-style: italic; color: var(--muted); }
+  .hero-lead { font-size: 18px; font-weight: 300; color: var(--muted); max-width: 560px; line-height: 1.8; }
+  .hero-lead strong { color: var(--text); font-weight: 400; }
+
+  .section { margin-bottom: 64px; }
+  .section-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: .12em; text-transform: uppercase; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  h2 { font-size: 24px; font-weight: 400; margin-bottom: 16px; letter-spacing: -.01em; }
+  p { color: var(--muted); margin-bottom: 14px; font-size: 16px; }
+  p strong { color: var(--text); font-weight: 400; }
+
+  /* ── IoC container ── */
+  .ioc-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; margin-bottom: 16px; }
+  .ioc-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: .1em; margin-bottom: 16px; text-align: center; }
+  .ioc-container {
+    border: 2px dashed var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .ioc-container-label {
+    position: absolute;
+    top: -10px;
+    left: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--blue);
+    background: var(--surface);
+    padding: 0 8px;
+    letter-spacing: .08em;
+  }
+  .beans-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .bean-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: border-color .15s, transform .12s;
+    text-align: center;
+  }
+  .bean-card:hover { transform: translateY(-2px); }
+  .bean-card.active { border-color: var(--blue); background: var(--blue-dim); }
+  .bean-icon { font-size: 20px; margin-bottom: 6px; }
+  .bean-name { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text); margin-bottom: 3px; }
+  .bean-card.active .bean-name { color: var(--blue); }
+  .bean-pkg { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--faint); }
+  .bean-detail { background: var(--surface2); border-radius: 8px; padding: 16px 18px; font-size: 14px; color: var(--muted); min-height: 64px; line-height: 1.7; font-family: 'Fraunces', serif; }
+  .bean-detail strong { color: var(--text); font-weight: 400; }
+  .bean-detail .bd-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--blue); margin-bottom: 6px; letter-spacing: .08em; }
+
+  /* ── auto-config stepper ── */
+  .stepper-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 16px; }
+  .stepper-header { padding: 16px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .stepper-title { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: .08em; }
+  .stepper-nav { display: flex; align-items: center; gap: 12px; }
+  .step-dots { display: flex; gap: 6px; }
+  .step-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: background .2s; cursor: pointer; }
+  .step-dot.active { background: var(--green); }
+  .step-dot.done   { background: var(--faint); }
+  .nav-btn { font-family: 'JetBrains Mono', monospace; font-size: 12px; padding: 6px 14px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface2); color: var(--muted); cursor: pointer; transition: all .15s; }
+  .nav-btn:hover { border-color: var(--green); color: var(--green); }
+  .nav-btn:disabled { opacity: .3; cursor: default; }
+  .nav-btn.primary { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+
+  .stepper-body { padding: 28px; }
+  .step-panel { display: none; }
+  .step-panel.active { display: block; }
+  .step-num-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600;
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--green-dim); color: var(--green); border: 1px solid var(--green);
+    margin-bottom: 14px;
+  }
+  .step-heading { font-size: 20px; font-weight: 400; margin-bottom: 10px; }
+  .step-body { font-size: 15px; color: var(--muted); line-height: 1.8; margin-bottom: 16px; }
+  .step-body strong { color: var(--text); font-weight: 400; }
+  .code-block {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.9;
+    overflow-x: auto;
+    margin-bottom: 12px;
+  }
+  .c-ann { color: var(--amber); }
+  .c-kw  { color: var(--coral); }
+  .c-type { color: var(--blue); }
+  .c-str  { color: var(--green-text); }
+  .c-method { color: var(--green); }
+  .c-comment { color: var(--faint); font-style: italic; }
+  .c-tag { color: var(--blue); }
+  .c-attr { color: var(--purple); }
+  .c-val  { color: var(--amber); }
+
+  /* ── starter picker ── */
+  .starter-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 16px; }
+  .starter-list { display: flex; flex-direction: column; border-right: 1px solid var(--border); min-width: 220px; }
+  .starter-row { display: flex; gap: 0; }
+  .starter-item {
+    padding: 14px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .12s;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .starter-item:last-child { border-bottom: none; }
+  .starter-item:hover { background: var(--surface2); color: var(--text); }
+  .starter-item.active { background: var(--green-dim); color: var(--green); border-right: 2px solid var(--green); }
+  .starter-icon { font-size: 15px; flex-shrink: 0; }
+  .starter-detail { flex: 1; padding: 24px 28px; }
+  .starter-panel { display: none; }
+  .starter-panel.active { display: block; }
+  .starter-panel-title { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--green); margin-bottom: 6px; }
+  .starter-panel-sub { font-size: 14px; color: var(--muted); margin-bottom: 18px; line-height: 1.6; }
+  .starter-panel-sub strong { color: var(--text); font-weight: 400; }
+  .deps-list { display: flex; flex-direction: column; gap: 8px; }
+  .dep-row {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 10px 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .dep-row-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+  .dep-row-name { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--green-text); margin-bottom: 2px; }
+  .dep-row-desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+  /* ── DI before/after ── */
+  .ba-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 16px; }
+  .ba-tabs { display: flex; border-bottom: 1px solid var(--border); }
+  .ba-tab { flex: 1; padding: 12px 20px; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: .06em; cursor: pointer; text-align: center; transition: background .15s, color .15s; color: var(--muted); border: none; background: transparent; }
+  .ba-tab.active-before { background: var(--coral-dim); color: var(--coral); }
+  .ba-tab.active-after  { background: var(--green-dim); color: var(--green); }
+  .ba-body { padding: 24px; }
+  .ba-panel { display: none; }
+  .ba-panel.active { display: block; }
+  .ba-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .08em; margin-bottom: 12px; }
+  .ba-label.before { color: var(--coral); }
+  .ba-label.after  { color: var(--green); }
+  .ba-note { font-size: 14px; color: var(--muted); font-style: italic; margin-top: 10px; }
+
+  /* ── callout ── */
+  .callout { border-radius: 10px; padding: 18px 22px; display: flex; gap: 14px; align-items: flex-start; margin-bottom: 16px; }
+  .callout-green { background: var(--green-dim); border: 1px solid var(--green); }
+  .callout-amber { background: var(--amber-dim); border: 1px solid var(--amber); }
+  .callout-blue  { background: var(--blue-dim);  border: 1px solid var(--blue); }
+  .callout-teal  { background: var(--teal-dim);  border: 1px solid var(--teal); }
+  .callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 2px; }
+  .callout-text { font-size: 15px; line-height: 1.7; font-family: 'Fraunces', serif; }
+  .callout-green .callout-text { color: var(--green-text); }
+  .callout-amber .callout-text { color: var(--amber); }
+  .callout-blue  .callout-text { color: var(--blue); }
+  .callout-teal  .callout-text { color: var(--teal); }
+  .callout-text strong { font-weight: 600; }
+
+  /* ── CTA ── */
+  .cta { margin-top: 64px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 32px 36px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+  .cta-left h3 { font-size: 20px; font-weight: 300; margin-bottom: 6px; }
+  .cta-left p  { font-size: 14px; color: var(--muted); margin: 0; }
+  .cta-btn { background: var(--green); color: #0a1f14; border: none; border-radius: 8px; padding: 12px 24px; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; letter-spacing: .03em; transition: opacity .15s; text-decoration: none; display: inline-block; }
+  .cta-btn:hover { opacity: .85; }
+
+  .progress-bar { width: 100%; height: 3px; background: var(--surface2); margin-bottom: 40px; border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; width: 40%; background: linear-gradient(90deg, var(--green) 0%, var(--teal) 100%); border-radius: 2px; }
+
+  @media (max-width: 600px) {
+    .page { padding: 32px 20px 80px; }
+    .topbar { padding: 12px 20px; }
+    .beans-grid { grid-template-columns: repeat(2, 1fr); }
+    .starter-row { flex-direction: column; }
+    .starter-list { border-right: none; border-bottom: 1px solid var(--border); min-width: unset; }
+    .cta { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back-link" href="index.html">← All Parts</a>
+  <span class="topbar-sep">/</span>
+  <span class="step-badge">STEP 4 / 10</span>
+  <span class="topbar-title">Spring Boot &nbsp;·&nbsp; <strong>How Spring Boot Works</strong></span>
+</div>
+
+<div class="page">
+
+  <div class="progress-bar"><div class="progress-fill"></div></div>
+
+  <div class="hero">
+    <div class="hero-eyebrow">STEP 4 — INTERNALS</div>
+    <h1>It's not magic.<br /><em>It's just clever.</em></h1>
+    <p class="hero-lead">Spring Boot's auto-configuration feels like magic the first time. It isn't. In this step you'll see <strong>exactly</strong> how it detects what you need and wires it up — so you can debug it when it goes wrong.</p>
+  </div>
+
+  <!-- section 1: IoC container -->
+  <div class="section">
+    <div class="section-label">The foundation</div>
+    <h2>The Application Context — Spring's bean factory</h2>
+    <p>Everything in Spring revolves around one idea: <strong>Spring manages your objects</strong>. Instead of you calling <code style="font-family:'JetBrains Mono',monospace;color:var(--amber)">new ProductService()</code>, Spring creates it, configures it, and hands it to you when you need it. These managed objects are called <strong>beans</strong>.</p>
+    <p>The <strong>Application Context</strong> is the container that holds all beans. Click each bean below to see what it does and who created it.</p>
+
+    <div class="ioc-wrap">
+      <div class="ioc-label">APPLICATION CONTEXT — beans managed by Spring</div>
+      <div class="ioc-container">
+        <div class="ioc-container-label">ApplicationContext</div>
+        <div class="beans-grid">
+          <div class="bean-card" data-bean="dispatcher" onclick="selectBean(this)">
+            <div class="bean-icon">🌐</div>
+            <div class="bean-name">DispatcherServlet</div>
+            <div class="bean-pkg">auto-configured</div>
+          </div>
+          <div class="bean-card" data-bean="jackson" onclick="selectBean(this)">
+            <div class="bean-icon">🔄</div>
+            <div class="bean-name">ObjectMapper</div>
+            <div class="bean-pkg">auto-configured</div>
+          </div>
+          <div class="bean-card" data-bean="tomcat" onclick="selectBean(this)">
+            <div class="bean-icon">🐱</div>
+            <div class="bean-name">TomcatServer</div>
+            <div class="bean-pkg">auto-configured</div>
+          </div>
+          <div class="bean-card" data-bean="datasource" onclick="selectBean(this)">
+            <div class="bean-icon">🗄️</div>
+            <div class="bean-name">DataSource</div>
+            <div class="bean-pkg">auto-configured</div>
+          </div>
+          <div class="bean-card" data-bean="service" onclick="selectBean(this)">
+            <div class="bean-icon">⚙️</div>
+            <div class="bean-name">ProductService</div>
+            <div class="bean-pkg">your code</div>
+          </div>
+          <div class="bean-card" data-bean="controller" onclick="selectBean(this)">
+            <div class="bean-icon">📡</div>
+            <div class="bean-name">ProductController</div>
+            <div class="bean-pkg">your code</div>
+          </div>
+        </div>
+      </div>
+      <div class="bean-detail" id="bean-detail">
+        <em style="color:var(--faint)">← Click a bean to see what it does and who is responsible for creating it.</em>
+      </div>
+    </div>
+
+    <div class="callout callout-blue">
+      <span class="callout-icon">💡</span>
+      <div class="callout-text">Notice the split: <strong>auto-configured beans</strong> (Tomcat, Jackson, DataSource) are created by Spring Boot when it detects the right libraries. <strong>Your beans</strong> (ProductService, ProductController) are created because you annotated them with <code style="font-family:'JetBrains Mono',monospace">@Service</code> and <code>@RestController</code>. All of them live in the same container.</div>
+    </div>
+  </div>
+
+  <!-- section 2: auto-configuration pipeline -->
+  <div class="section">
+    <div class="section-label">The auto-config mechanism</div>
+    <h2>How auto-configuration actually works — step by step</h2>
+    <p>When you add a dependency, Spring Boot doesn't blindly configure everything. It uses <strong>conditions</strong> to decide what to configure. Walk through each step to see the full picture.</p>
+
+    <div class="stepper-wrap">
+      <div class="stepper-header">
+        <span class="stepper-title">AUTO-CONFIGURATION PIPELINE</span>
+        <div class="stepper-nav">
+          <div class="step-dots" id="step-dots"></div>
+          <button class="nav-btn" id="btn-prev" onclick="changeStep(-1)" disabled>← prev</button>
+          <button class="nav-btn primary" id="btn-next" onclick="changeStep(1)">next →</button>
+        </div>
+      </div>
+      <div class="stepper-body" id="stepper-body"></div>
+    </div>
+
+    <div class="callout callout-teal">
+      <span class="callout-icon">🔍</span>
+      <div class="callout-text">Want to see exactly what was auto-configured in your running app? Add <code style="font-family:'JetBrains Mono',monospace">--debug</code> to your run command: <code style="font-family:'JetBrains Mono',monospace">mvn spring-boot:run -Dspring-boot.run.arguments=--debug</code>. Spring Boot prints a <strong>Conditions Evaluation Report</strong> showing every auto-config class and whether it matched.</div>
+    </div>
+  </div>
+
+  <!-- section 3: starters -->
+  <div class="section">
+    <div class="section-label">Starters</div>
+    <h2>One dependency that brings everything</h2>
+    <p>A starter is a single Maven dependency that pulls in a <strong>curated, compatible set of libraries</strong> for a feature. Without starters you'd have to find, pick, and version-align 5–10 libraries yourself. Click a starter to see what it includes.</p>
+
+    <div class="starter-wrap">
+      <div class="starter-row">
+        <div class="starter-list" id="starter-list">
+          <div class="starter-item active" data-starter="web" onclick="selectStarter(this)">
+            <span class="starter-icon">🌐</span> spring-boot-starter-web
+          </div>
+          <div class="starter-item" data-starter="jpa" onclick="selectStarter(this)">
+            <span class="starter-icon">🗄️</span> spring-boot-starter-data-jpa
+          </div>
+          <div class="starter-item" data-starter="security" onclick="selectStarter(this)">
+            <span class="starter-icon">🔐</span> spring-boot-starter-security
+          </div>
+          <div class="starter-item" data-starter="test" onclick="selectStarter(this)">
+            <span class="starter-icon">🧪</span> spring-boot-starter-test
+          </div>
+        </div>
+        <div class="starter-detail" id="starter-detail"></div>
+      </div>
+    </div>
+
+    <div class="callout callout-amber">
+      <span class="callout-icon">⚡</span>
+      <div class="callout-text">Notice that <code style="font-family:'JetBrains Mono',monospace">spring-boot-starter-test</code> includes JUnit 5, Mockito, and AssertJ — all at <strong>compatible, tested versions</strong>. Before starters, you spent an hour googling "which version of Mockito works with JUnit 5 and Spring 5". That problem no longer exists.</div>
+    </div>
+  </div>
+
+  <!-- section 4: dependency injection -->
+  <div class="section">
+    <div class="section-label">Dependency injection</div>
+    <h2>Spring wires your objects together</h2>
+    <p>Once Spring has all beans in the container, it <strong>injects</strong> them into classes that declare they need them. This is Dependency Injection (DI) — the pattern that makes your code testable and decoupled. Toggle to see the difference it makes.</p>
+
+    <div class="ba-wrap">
+      <div class="ba-tabs">
+        <button class="ba-tab active-before" id="di-tab-before" onclick="showDI('before')">WITHOUT Spring DI</button>
+        <button class="ba-tab" id="di-tab-after" onclick="showDI('after')">WITH Spring DI</button>
+      </div>
+      <div class="ba-body">
+        <div class="ba-panel active" id="di-before">
+          <div class="ba-label before">// You manually create and wire everything</div>
+          <div class="code-block"><span class="c-comment">// Every class must know how to build its own dependencies.</span>
+<span class="c-comment">// Change DataSource? Update every class that uses it.</span>
+
+<span class="c-kw">public class</span> <span class="c-type">ProductController</span> {
+
+    <span class="c-kw">private final</span> <span class="c-type">ProductService</span> productService;
+
+    <span class="c-kw">public</span> <span class="c-type">ProductController</span>() {
+        <span class="c-comment">// You build the whole graph yourself</span>
+        DataSource ds = <span class="c-kw">new</span> <span class="c-type">HikariDataSource</span>(config);
+        EntityManager em = <span class="c-type">Persistence</span>.<span class="c-method">createEntityManager</span>(ds);
+        ProductRepository repo = <span class="c-kw">new</span> <span class="c-type">ProductRepository</span>(em);
+        <span class="c-kw">this</span>.productService = <span class="c-kw">new</span> <span class="c-type">ProductService</span>(repo);
+    }
+}</div>
+          <p class="ba-note">Testing this is painful — you can't swap in a fake repository without rewriting the constructor.</p>
+        </div>
+
+        <div class="ba-panel" id="di-after">
+          <div class="ba-label after">// Spring injects dependencies automatically</div>
+          <div class="code-block"><span class="c-comment">// Declare what you need. Spring provides it.</span>
+<span class="c-comment">// Change DataSource config? Only application.properties changes.</span>
+
+<span class="c-ann">@RestController</span>
+<span class="c-kw">public class</span> <span class="c-type">ProductController</span> {
+
+    <span class="c-kw">private final</span> <span class="c-type">ProductService</span> productService;
+
+    <span class="c-comment">// Constructor injection — Spring calls this automatically</span>
+    <span class="c-kw">public</span> <span class="c-type">ProductController</span>(<span class="c-type">ProductService</span> productService) {
+        <span class="c-kw">this</span>.productService = productService;
+    }
+}</div>
+          <div class="ba-label after" style="margin-top:16px">// Testing becomes trivial</div>
+          <div class="code-block"><span class="c-ann">@Test</span>
+<span class="c-kw">void</span> <span class="c-method">getProduct_returnsProduct</span>() {
+    <span class="c-comment">// Swap in a fake — no Spring context needed</span>
+    <span class="c-type">ProductService</span> fakeService = <span class="c-kw">new</span> <span class="c-type">FakeProductService</span>();
+    <span class="c-type">ProductController</span> ctrl = <span class="c-kw">new</span> <span class="c-type">ProductController</span>(fakeService);
+    <span class="c-comment">// test ctrl.getProduct(1L) ...</span>
+}</div>
+          <p class="ba-note">Constructor injection is the preferred style — fields are <code>final</code>, dependencies are explicit, and testing requires no framework magic.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-green">
+      <span class="callout-icon">✅</span>
+      <div class="callout-text"><strong>Always use constructor injection</strong> — never <code style="font-family:'JetBrains Mono',monospace">@Autowired</code> on a field. Constructor injection makes dependencies visible, keeps fields immutable (<code>final</code>), and lets you test without a Spring context. IntelliJ will even warn you if you use field injection.</div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta">
+    <div class="cta-left">
+      <h3>Ready for Step 5?</h3>
+      <p>Dependencies and the POM — adding libraries with Maven without guessing or trial and error.</p>
+    </div>
+    <a class="cta-btn" href="part-5.html">Step 5 — Dependencies and the POM →</a>
+  </div>
+
+</div>
+
+<script>
+// ── Bean detail ──
+const beanDetails = {
+  dispatcher: {
+    label: 'AUTO-CONFIGURED BY: WebMvcAutoConfiguration',
+    body: '<strong>DispatcherServlet</strong> is Spring MVC\'s front controller — every HTTP request enters through it. It looks at the URL and method, finds the right <code style="font-family:\'JetBrains Mono\',monospace;color:var(--amber)">@RequestMapping</code> method in your controllers, calls it, and sends the response. Spring Boot creates it automatically when <code>spring-boot-starter-web</code> is on the classpath.',
+  },
+  jackson: {
+    label: 'AUTO-CONFIGURED BY: JacksonAutoConfiguration',
+    body: '<strong>ObjectMapper</strong> is Jackson\'s JSON serializer/deserializer. When your controller returns a <code>Product</code> object, Spring uses the ObjectMapper to convert it to JSON before sending the response. Conversely, when a request body arrives as JSON, the ObjectMapper parses it back into a Java object. You get this for free with the web starter.',
+  },
+  tomcat: {
+    label: 'AUTO-CONFIGURED BY: EmbeddedWebServerFactoryCustomizerAutoConfiguration',
+    body: '<strong>Embedded Tomcat</strong> is the web server running inside your JAR. It listens on port 8080, accepts TCP connections, parses HTTP requests, and passes them to the DispatcherServlet. Before Spring Boot, you had to install Tomcat separately and deploy a WAR file into it. Now it\'s just another bean in the context.',
+  },
+  datasource: {
+    label: 'AUTO-CONFIGURED BY: DataSourceAutoConfiguration',
+    body: '<strong>DataSource</strong> manages the pool of database connections. Spring Boot auto-configures it from your <code>application.properties</code> (the <code>spring.datasource.*</code> properties). Only created if a JDBC driver is on the classpath. Uses HikariCP as the connection pool by default — currently the fastest available for JVM.',
+  },
+  service: {
+    label: 'CREATED BY: @ComponentScan finding @Service',
+    body: '<strong>ProductService</strong> is your bean — created because you annotated the class with <code style="font-family:\'JetBrains Mono\',monospace;color:var(--amber)">@Service</code>. Spring finds it during component scan, creates one instance, and registers it. Whenever another bean (like ProductController) declares it as a constructor parameter, Spring injects this singleton instance.',
+  },
+  controller: {
+    label: 'CREATED BY: @ComponentScan finding @RestController',
+    body: '<strong>ProductController</strong> is registered because of <code style="font-family:\'JetBrains Mono\',monospace;color:var(--amber)">@RestController</code>. Spring not only creates it as a bean — it also registers all its <code>@GetMapping</code> / <code>@PostMapping</code> methods with the DispatcherServlet so HTTP requests get routed to the right method.',
+  },
+};
+
+function selectBean(card) {
+  document.querySelectorAll('.bean-card').forEach(c => c.classList.remove('active'));
+  card.classList.add('active');
+  const d = beanDetails[card.dataset.bean];
+  document.getElementById('bean-detail').innerHTML =
+    `<div class="bd-label">${d.label}</div>${d.body}`;
+}
+
+// ── Auto-config stepper ──
+const steps = [
+  {
+    heading: 'You add a starter to pom.xml',
+    body: 'You add <strong>one line</strong> to your <code>pom.xml</code> — a starter dependency. That\'s all you do.',
+    code: `<span class="c-comment">&lt;!-- pom.xml --&gt;</span>
+<span class="c-tag">&lt;dependency&gt;</span>
+    <span class="c-tag">&lt;groupId&gt;</span>org.springframework.boot<span class="c-tag">&lt;/groupId&gt;</span>
+    <span class="c-tag">&lt;artifactId&gt;</span><span class="c-val">spring-boot-starter-web</span><span class="c-tag">&lt;/artifactId&gt;</span>
+<span class="c-tag">&lt;/dependency&gt;</span>`,
+  },
+  {
+    heading: 'Maven downloads a tree of JARs',
+    body: 'Maven resolves the starter\'s transitive dependencies and downloads them all at <strong>compatible, pre-tested versions</strong>. You never choose individual versions.',
+    code: `<span class="c-comment">// spring-boot-starter-web pulls in:</span>
+spring-boot-starter          <span class="c-comment">// core Spring Boot</span>
+spring-boot-starter-tomcat   <span class="c-comment">// embedded Tomcat</span>
+spring-webmvc                <span class="c-comment">// Spring MVC + DispatcherServlet</span>
+jackson-databind             <span class="c-comment">// JSON ↔ Java object conversion</span>
+<span class="c-comment">// ...and their transitive dependencies, all version-aligned</span>`,
+  },
+  {
+    heading: 'Spring Boot scans auto-configuration candidates',
+    body: 'On startup, <code>@EnableAutoConfiguration</code> reads a file inside every Spring Boot JAR: <code>META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports</code>. This file lists hundreds of auto-configuration classes to consider.',
+    code: `<span class="c-comment">// META-INF/spring/...AutoConfiguration.imports (inside spring-boot-autoconfigure.jar)</span>
+org.springframework.boot.autoconfigure.web.servlet.<span class="c-type">WebMvcAutoConfiguration</span>
+org.springframework.boot.autoconfigure.jackson.<span class="c-type">JacksonAutoConfiguration</span>
+org.springframework.boot.autoconfigure.jdbc.<span class="c-type">DataSourceAutoConfiguration</span>
+org.springframework.boot.autoconfigure.orm.jpa.<span class="c-type">HibernateJpaAutoConfiguration</span>
+<span class="c-comment">// ... ~150 more</span>`,
+  },
+  {
+    heading: '@ConditionalOnClass — the gatekeeper',
+    body: 'Each auto-config class is annotated with conditions. <strong>Only if the condition is true does Spring create the beans.</strong> No DispatcherServlet class on the classpath? WebMvcAutoConfiguration is silently skipped.',
+    code: `<span class="c-comment">// Inside WebMvcAutoConfiguration (Spring Boot source — simplified)</span>
+<span class="c-ann">@AutoConfiguration</span>
+<span class="c-ann">@ConditionalOnClass</span>({ <span class="c-type">Servlet</span>.<span class="c-kw">class</span>, <span class="c-type">DispatcherServlet</span>.<span class="c-kw">class</span> })
+<span class="c-ann">@ConditionalOnMissingBean</span>(<span class="c-type">WebMvcConfigurationSupport</span>.<span class="c-kw">class</span>)
+<span class="c-kw">public class</span> <span class="c-type">WebMvcAutoConfiguration</span> {
+    <span class="c-comment">// Only runs if DispatcherServlet.class is on the classpath</span>
+    <span class="c-comment">// @ConditionalOnMissingBean means "skip if user already configured this"</span>
+}`,
+  },
+  {
+    heading: 'Beans are created and registered',
+    body: 'Conditions passed — Spring creates all the beans defined in the auto-config class and registers them in the Application Context. <strong>Your code can now inject them</strong>. If you define your own bean of the same type (<code>@ConditionalOnMissingBean</code>), Spring skips the auto-configured one and uses yours instead.',
+    code: `<span class="c-comment">// The end result — all available for injection in your code</span>
+<span class="c-type">ApplicationContext</span> ctx = <span class="c-comment">/* Spring Boot started this */</span>;
+
+ctx.<span class="c-method">getBean</span>(<span class="c-type">DispatcherServlet</span>.<span class="c-kw">class</span>); <span class="c-comment">// ✓ auto-configured</span>
+ctx.<span class="c-method">getBean</span>(<span class="c-type">ObjectMapper</span>.<span class="c-kw">class</span>);       <span class="c-comment">// ✓ auto-configured</span>
+ctx.<span class="c-method">getBean</span>(<span class="c-type">ProductService</span>.<span class="c-kw">class</span>);    <span class="c-comment">// ✓ your @Service</span>`,
+  },
+];
+
+let currentStep = 0;
+
+function renderStepper() {
+  const body = document.getElementById('stepper-body');
+  const dots = document.getElementById('step-dots');
+  body.innerHTML = '';
+  dots.innerHTML = '';
+
+  steps.forEach((s, i) => {
+    const panel = document.createElement('div');
+    panel.className = 'step-panel' + (i === currentStep ? ' active' : '');
+    panel.innerHTML = `
+      <div class="step-num-badge">${i + 1}</div>
+      <div class="step-heading">${s.heading}</div>
+      <div class="step-body">${s.body}</div>
+      <div class="code-block">${s.code}</div>`;
+    body.appendChild(panel);
+
+    const dot = document.createElement('div');
+    dot.className = 'step-dot' + (i === currentStep ? ' active' : i < currentStep ? ' done' : '');
+    dot.onclick = () => { currentStep = i; renderStepper(); };
+    dots.appendChild(dot);
+  });
+
+  document.getElementById('btn-prev').disabled = currentStep === 0;
+  const nextBtn = document.getElementById('btn-next');
+  if (currentStep === steps.length - 1) {
+    nextBtn.textContent = '✓ done';
+    nextBtn.disabled = true;
+  } else {
+    nextBtn.textContent = 'next →';
+    nextBtn.disabled = false;
+  }
+}
+
+function changeStep(dir) {
+  currentStep = Math.max(0, Math.min(steps.length - 1, currentStep + dir));
+  renderStepper();
+}
+
+renderStepper();
+
+// ── Starters ──
+const starterData = {
+  web: {
+    title: 'spring-boot-starter-web',
+    sub: 'Everything you need to build <strong>REST APIs and web applications</strong>. This is the starter you added in Step 3.',
+    deps: [
+      { icon: '🌐', name: 'spring-webmvc', desc: 'Spring MVC — DispatcherServlet, @RestController, @RequestMapping, request mapping' },
+      { icon: '🐱', name: 'spring-boot-starter-tomcat', desc: 'Embedded Tomcat 10 — the web server inside your JAR, listens on port 8080' },
+      { icon: '🔄', name: 'jackson-databind', desc: 'JSON serialization — converts Java objects ↔ JSON automatically' },
+      { icon: '✅', name: 'hibernate-validator', desc: 'Bean Validation — powers @NotNull, @Size, @Email on your request body DTOs' },
+    ],
+  },
+  jpa: {
+    title: 'spring-boot-starter-data-jpa',
+    sub: 'Everything you need to <strong>persist data to a relational database</strong> using JPA/Hibernate. We add this in Step 8.',
+    deps: [
+      { icon: '🗄️', name: 'spring-data-jpa', desc: 'Spring Data JPA — JpaRepository interface with findAll, save, findById, delete for free' },
+      { icon: '🏛️', name: 'hibernate-core', desc: 'Hibernate ORM — the JPA implementation that translates @Entity classes to SQL tables' },
+      { icon: '💧', name: 'HikariCP', desc: 'Connection pool — manages a pool of database connections for efficiency' },
+      { icon: '🔁', name: 'spring-jdbc', desc: 'Spring JDBC — lower-level database access, used internally by Spring Data' },
+    ],
+  },
+  security: {
+    title: 'spring-boot-starter-security',
+    sub: 'Auto-configures <strong>authentication and authorization</strong> for all your endpoints. Adding this starter immediately secures your whole app.',
+    deps: [
+      { icon: '🔐', name: 'spring-security-web', desc: 'Security filter chain — intercepts every request before it reaches your controllers' },
+      { icon: '⚙️', name: 'spring-security-config', desc: 'Security DSL — lets you configure rules like "require login for /admin/**"' },
+      { icon: '🔑', name: 'spring-security-crypto', desc: 'Password encoding — BCryptPasswordEncoder to hash passwords safely' },
+    ],
+  },
+  test: {
+    title: 'spring-boot-starter-test',
+    sub: 'A complete testing toolkit included in every generated project. <strong>Added automatically</strong> by Spring Initializr with test scope.',
+    deps: [
+      { icon: '🧪', name: 'junit-jupiter', desc: 'JUnit 5 — the standard Java testing framework (@Test, @BeforeEach, parameterized tests)' },
+      { icon: '🎭', name: 'mockito-core', desc: 'Mockito — create fake (mock) objects to isolate the class you\'re testing' },
+      { icon: '✔️', name: 'assertj-core', desc: 'AssertJ — fluent assertions: assertThat(result).isEqualTo("expected")' },
+      { icon: '🌐', name: 'spring-test', desc: 'Spring Test — @SpringBootTest, MockMvc, @WebMvcTest, @DataJpaTest utilities' },
+    ],
+  },
+};
+
+function renderStarter(key) {
+  const d = starterData[key];
+  const deps = d.deps.map(dep => `
+    <div class="dep-row">
+      <div class="dep-row-icon">${dep.icon}</div>
+      <div>
+        <div class="dep-row-name">${dep.name}</div>
+        <div class="dep-row-desc">${dep.desc}</div>
+      </div>
+    </div>`).join('');
+  document.getElementById('starter-detail').innerHTML = `
+    <div class="starter-panel active">
+      <div class="starter-panel-title">${d.title}</div>
+      <div class="starter-panel-sub">${d.sub}</div>
+      <div class="deps-list">${deps}</div>
+    </div>`;
+}
+
+function selectStarter(el) {
+  document.querySelectorAll('.starter-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+  renderStarter(el.dataset.starter);
+}
+
+renderStarter('web');
+
+// ── DI before/after ──
+function showDI(which) {
+  document.getElementById('di-before').classList.toggle('active', which === 'before');
+  document.getElementById('di-after').classList.toggle('active', which === 'after');
+  document.getElementById('di-tab-before').className = 'ba-tab' + (which === 'before' ? ' active-before' : '');
+  document.getElementById('di-tab-after').className  = 'ba-tab' + (which === 'after'  ? ' active-after'  : '');
+}
+</script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Courses</title>
+<title>learn.dev — Software Development Courses</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -23,10 +23,15 @@
     --amber: #fbbf24;
     --amber-dim: #3d2e08;
     --coral: #f87171;
+    --coral-dim: #3d1212;
     --purple: #a78bfa;
     --purple-dim: #2d1f4e;
     --teal: #2dd4bf;
     --teal-dim: #0d2e2a;
+    --pink: #f472b6;
+    --pink-dim: #3d1230;
+    --orange: #fb923c;
+    --orange-dim: #3d1f08;
   }
 
   html { scroll-behavior: smooth; }
@@ -59,18 +64,8 @@
     letter-spacing: -.02em;
   }
   .nav-brand span { color: var(--blue); }
-  .nav-links {
-    display: flex;
-    gap: 32px;
-    list-style: none;
-  }
-  .nav-links a {
-    color: var(--muted);
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 500;
-    transition: color .15s;
-  }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a { color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 500; transition: color .15s; }
   .nav-links a:hover { color: var(--text); }
 
   /* ── HERO ── */
@@ -79,6 +74,18 @@
     border-bottom: 1px solid var(--border);
     padding: 72px 48px;
     text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(96,165,250,.06) 0%, transparent 70%);
+    top: -200px; left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
   }
   .hero-eyebrow {
     display: inline-flex;
@@ -96,18 +103,20 @@
     margin-bottom: 24px;
   }
   .hero h1 {
-    font-size: clamp(28px, 5vw, 48px);
+    font-size: clamp(28px, 5vw, 52px);
     font-weight: 700;
-    line-height: 1.15;
+    line-height: 1.12;
     letter-spacing: -.03em;
     margin-bottom: 16px;
   }
-  .hero h1 .highlight { color: var(--blue); }
+  .hero h1 .h-blue   { color: var(--blue); }
+  .hero h1 .h-green  { color: var(--green); }
+  .hero h1 .h-amber  { color: var(--amber); }
   .hero-sub {
     font-size: 17px;
     color: var(--muted);
-    max-width: 540px;
-    margin: 0 auto 36px;
+    max-width: 560px;
+    margin: 0 auto 40px;
     line-height: 1.75;
   }
   .hero-stats {
@@ -117,47 +126,25 @@
     flex-wrap: wrap;
   }
   .stat { text-align: center; }
-  .stat-num {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--text);
-    display: block;
-  }
-  .stat-label {
-    font-size: 12px;
-    color: var(--muted);
-    margin-top: 2px;
-  }
+  .stat-num { font-size: 26px; font-weight: 700; color: var(--text); display: block; letter-spacing: -.02em; }
+  .stat-label { font-size: 12px; color: var(--muted); margin-top: 2px; }
 
   /* ── FILTERS ── */
   .filters-bar {
-    max-width: 1100px;
+    max-width: 1160px;
     margin: 0 auto;
-    padding: 32px 48px 0;
+    padding: 36px 48px 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 16px;
   }
-  .filters-title {
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--text);
-  }
-  .filters-count {
-    font-size: 13px;
-    color: var(--muted);
-    margin-top: 2px;
-  }
-  .filter-pills {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
+  .filters-title { font-size: 20px; font-weight: 600; color: var(--text); }
+  .filters-count { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .filter-pills { display: flex; gap: 8px; flex-wrap: wrap; }
   .pill {
-    font-size: 13px;
-    font-weight: 500;
+    font-size: 13px; font-weight: 500;
     padding: 6px 16px;
     border-radius: 20px;
     border: 1px solid var(--border);
@@ -165,24 +152,15 @@
     color: var(--muted);
     cursor: pointer;
     transition: all .15s;
+    display: flex; align-items: center; gap: 6px;
   }
-  .pill:hover, .pill.active {
-    border-color: var(--blue);
-    color: var(--blue);
-    background: var(--blue-dim);
-  }
+  .pill:hover { border-color: var(--faint); color: var(--text); }
+  .pill.active { border-color: var(--blue); color: var(--blue); background: var(--blue-dim); }
+  .pill-dot { width: 7px; height: 7px; border-radius: 50%; }
 
   /* ── GRID ── */
-  .courses-section {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 32px 48px 100px;
-  }
-  .courses-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 24px;
-  }
+  .courses-section { max-width: 1160px; margin: 0 auto; padding: 28px 48px 100px; }
+  .courses-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 24px; }
 
   /* ── COURSE CARD ── */
   .course-card {
@@ -195,144 +173,88 @@
     text-decoration: none;
     color: inherit;
     transition: border-color .15s, transform .15s, box-shadow .15s;
+    position: relative;
   }
-  .course-card:hover {
+  .course-card:not(.soon):hover {
     border-color: var(--blue);
     transform: translateY(-4px);
     box-shadow: 0 20px 40px rgba(0,0,0,.4);
   }
+  .course-card.soon { cursor: default; }
 
+  /* thumb */
   .course-thumb {
     position: relative;
-    height: 190px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    height: 180px;
+    display: flex; align-items: center; justify-content: center;
     overflow: hidden;
   }
   .course-thumb-icon {
-    font-size: 64px;
-    line-height: 1;
-    position: relative;
-    z-index: 1;
-    filter: drop-shadow(0 4px 16px rgba(0,0,0,.5));
+    font-size: 60px; line-height: 1;
+    position: relative; z-index: 1;
+    filter: drop-shadow(0 4px 20px rgba(0,0,0,.5));
   }
-  .course-thumb-bg {
+  .course-thumb-bg { position: absolute; inset: 0; }
+  .glow {
     position: absolute;
-    inset: 0;
-  }
-  .thumb-java .course-thumb-bg {
-    background: linear-gradient(135deg, #1a1035 0%, #2d1f4e 40%, #1a0d35 100%);
-  }
-  .thumb-java .glow {
-    position: absolute;
-    width: 180px; height: 180px;
+    width: 200px; height: 200px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(167,139,250,.25) 0%, transparent 70%);
     top: 50%; left: 50%;
     transform: translate(-50%,-50%);
-  }
-  .thumb-spring .course-thumb-bg {
-    background: linear-gradient(135deg, #0a1f0e 0%, #1a3d2b 40%, #0a1a10 100%);
-  }
-  .thumb-spring .glow {
-    position: absolute;
-    width: 180px; height: 180px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(74,222,128,.2) 0%, transparent 70%);
-    top: 50%; left: 50%;
-    transform: translate(-50%,-50%);
+    pointer-events: none;
   }
 
+  /* thumb themes */
+  .thumb-java   .course-thumb-bg { background: linear-gradient(135deg, #1a1035 0%, #2d1f4e 40%, #1a0d35 100%); }
+  .thumb-java   .glow { background: radial-gradient(circle, rgba(167,139,250,.25) 0%, transparent 70%); }
+  .thumb-spring .course-thumb-bg { background: linear-gradient(135deg, #0a1f0e 0%, #1a3d2b 40%, #0a1a10 100%); }
+  .thumb-spring .glow { background: radial-gradient(circle, rgba(74,222,128,.2) 0%, transparent 70%); }
+  .thumb-react  .course-thumb-bg { background: linear-gradient(135deg, #081828 0%, #0f2040 40%, #081520 100%); }
+  .thumb-react  .glow { background: radial-gradient(circle, rgba(96,165,250,.22) 0%, transparent 70%); }
+  .thumb-node   .course-thumb-bg { background: linear-gradient(135deg, #0d2010 0%, #1a3d1a 40%, #0a1a0a 100%); }
+  .thumb-node   .glow { background: radial-gradient(circle, rgba(74,222,128,.18) 0%, transparent 70%); }
+  .thumb-python .course-thumb-bg { background: linear-gradient(135deg, #0d1a2e 0%, #0f2040 40%, #0a1020 100%); }
+  .thumb-python .glow { background: radial-gradient(circle, rgba(251,191,36,.18) 0%, transparent 70%); }
+  .thumb-docker .course-thumb-bg { background: linear-gradient(135deg, #081828 0%, #0d2035 40%, #081020 100%); }
+  .thumb-docker .glow { background: radial-gradient(circle, rgba(45,212,191,.2) 0%, transparent 70%); }
+  .thumb-sql    .course-thumb-bg { background: linear-gradient(135deg, #1a1228 0%, #1e1540 40%, #100d20 100%); }
+  .thumb-sql    .glow { background: radial-gradient(circle, rgba(167,139,250,.2) 0%, transparent 70%); }
+  .thumb-ts     .course-thumb-bg { background: linear-gradient(135deg, #0a1428 0%, #0f2040 40%, #081018 100%); }
+  .thumb-ts     .glow { background: radial-gradient(circle, rgba(96,165,250,.22) 0%, transparent 70%); }
+  .thumb-git    .course-thumb-bg { background: linear-gradient(135deg, #2a1008 0%, #3d1f08 40%, #1a0a04 100%); }
+  .thumb-git    .glow { background: radial-gradient(circle, rgba(251,146,60,.22) 0%, transparent 70%); }
+  .thumb-flutter .course-thumb-bg { background: linear-gradient(135deg, #082028 0%, #0d2e2a 40%, #051518 100%); }
+  .thumb-flutter .glow { background: radial-gradient(circle, rgba(45,212,191,.22) 0%, transparent 70%); }
+
+  /* badges */
   .course-badge {
-    position: absolute;
-    top: 14px;
-    left: 14px;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-    padding: 3px 10px;
-    border-radius: 20px;
-    z-index: 2;
+    position: absolute; top: 14px; left: 14px;
+    font-size: 10px; font-weight: 700; letter-spacing: .08em;
+    text-transform: uppercase; padding: 3px 10px;
+    border-radius: 20px; z-index: 2;
   }
-  .badge-new {
-    background: var(--amber-dim);
-    color: var(--amber);
-    border: 1px solid rgba(251,191,36,.4);
-  }
-  .badge-bestseller {
-    background: var(--green-dim);
-    color: var(--green);
-    border: 1px solid rgba(74,222,128,.4);
-  }
+  .badge-new        { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(251,191,36,.4); }
+  .badge-bestseller { background: var(--green-dim); color: var(--green); border: 1px solid rgba(74,222,128,.4); }
+  .badge-soon       { background: var(--surface2); color: var(--faint); border: 1px solid var(--border); }
+  .badge-popular    { background: var(--coral-dim); color: var(--coral); border: 1px solid rgba(248,113,113,.4); }
 
-  .course-body {
-    padding: 22px 22px 0;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .course-level {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 8px;
-  }
-  .level-dot {
-    display: inline-block;
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    margin-right: 5px;
-    vertical-align: middle;
-    position: relative;
-    top: -1px;
-  }
-  .dot-beginner { background: var(--green); }
+  /* card body */
+  .course-body { padding: 20px 22px 0; flex: 1; display: flex; flex-direction: column; }
+  .course-level { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .level-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 5px; vertical-align: middle; position: relative; top: -1px; }
+  .dot-beginner     { background: var(--green); }
   .dot-intermediate { background: var(--amber); }
+  .dot-advanced     { background: var(--coral); }
 
-  .course-title {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--text);
-    line-height: 1.3;
-    margin-bottom: 10px;
-    letter-spacing: -.01em;
-  }
+  .course-title { font-size: 17px; font-weight: 700; color: var(--text); line-height: 1.3; margin-bottom: 10px; letter-spacing: -.01em; }
+  .course-card.soon .course-title { color: var(--muted); }
 
-  .course-desc {
-    font-size: 13.5px;
-    color: var(--muted);
-    line-height: 1.7;
-    flex: 1;
-    margin-bottom: 18px;
-  }
+  .course-desc { font-size: 13px; color: var(--muted); line-height: 1.7; flex: 1; margin-bottom: 16px; }
 
-  .course-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 18px;
-  }
-  .tag {
-    font-size: 11px;
-    font-weight: 500;
-    padding: 3px 10px;
-    border-radius: 6px;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    background: var(--surface2);
-  }
+  .course-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+  .tag { font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 6px; border: 1px solid var(--border); color: var(--muted); background: var(--surface2); }
 
-  .course-rating {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-bottom: 18px;
-  }
+  .course-rating { display: flex; align-items: center; gap: 6px; margin-bottom: 16px; }
   .stars { color: var(--amber); font-size: 13px; letter-spacing: 1px; }
   .rating-num { font-size: 13px; font-weight: 600; color: var(--text); }
   .rating-count { font-size: 12px; color: var(--muted); }
@@ -340,48 +262,22 @@
   .course-footer {
     padding: 14px 22px;
     border-top: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    display: flex; align-items: center; justify-content: space-between;
   }
-  .course-meta-info {
-    display: flex;
-    gap: 16px;
-  }
-  .meta-item {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 12px;
-    color: var(--muted);
-  }
+  .course-meta-info { display: flex; gap: 16px; }
+  .meta-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); }
   .meta-icon { font-size: 13px; }
 
-  .course-cta {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--blue);
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    transition: gap .15s;
-  }
-  .course-card:hover .course-cta { gap: 8px; }
+  .course-cta { font-size: 13px; font-weight: 600; color: var(--blue); display: flex; align-items: center; gap: 4px; transition: gap .15s; }
+  .course-card:not(.soon):hover .course-cta { gap: 8px; }
+  .cta-soon { font-size: 13px; font-weight: 500; color: var(--faint); }
 
-  /* ── COMING SOON ── */
-  .course-card.soon {
-    opacity: .5;
-    pointer-events: none;
-  }
+  /* no-results */
+  .no-results { display: none; padding: 60px 0; text-align: center; color: var(--muted); font-size: 15px; }
+  .no-results.visible { display: block; }
 
   /* ── FOOTER ── */
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 32px 48px;
-    text-align: center;
-    color: var(--muted);
-    font-size: 13px;
-  }
+  footer { border-top: 1px solid var(--border); padding: 32px 48px; text-align: center; color: var(--muted); font-size: 13px; }
 
   @media (max-width: 640px) {
     .nav { padding: 0 20px; }
@@ -400,28 +296,37 @@
   <div class="nav-brand">learn<span>.</span>dev</div>
   <ul class="nav-links">
     <li><a href="#">Courses</a></li>
-    <li><a href="#">Paths</a></li>
+    <li><a href="#">Learning Paths</a></li>
     <li><a href="#">Blog</a></li>
   </ul>
 </nav>
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-eyebrow">Java &amp; Spring Boot</div>
-  <h1>Master <span class="highlight">Backend Development</span><br />from first principles</h1>
-  <p class="hero-sub">Short, focused courses that take you from zero to production-ready code. No hand-waving — just real projects.</p>
+  <div class="hero-eyebrow">✦ Software Development</div>
+  <h1>
+    Build real skills.<br />
+    <span class="h-blue">Frontend.</span>
+    <span class="h-green"> Backend.</span>
+    <span class="h-amber"> DevOps.</span>
+  </h1>
+  <p class="hero-sub">Short, focused courses that take you from zero to production-ready code. No hand-waving — just real projects, real tools, real explanations.</p>
   <div class="hero-stats">
     <div class="stat">
-      <span class="stat-num">2</span>
+      <span class="stat-num">10+</span>
       <div class="stat-label">Courses</div>
     </div>
     <div class="stat">
-      <span class="stat-num">50+</span>
+      <span class="stat-num">150+</span>
       <div class="stat-label">Lessons</div>
     </div>
     <div class="stat">
-      <span class="stat-num">1k+</span>
+      <span class="stat-num">5k+</span>
       <div class="stat-label">Students</div>
+    </div>
+    <div class="stat">
+      <span class="stat-num">4.9</span>
+      <div class="stat-label">Avg. Rating</div>
     </div>
   </div>
 </section>
@@ -430,21 +335,34 @@
 <div class="filters-bar">
   <div>
     <div class="filters-title">All Courses</div>
-    <div class="filters-count">2 courses available</div>
+    <div class="filters-count" id="filter-count">10 courses</div>
   </div>
   <div class="filter-pills">
-    <button class="pill active">All</button>
-    <button class="pill">Beginner</button>
-    <button class="pill">Intermediate</button>
+    <button class="pill active" data-filter="all" onclick="filterCourses(this)">All</button>
+    <button class="pill" data-filter="backend" onclick="filterCourses(this)">
+      <span class="pill-dot" style="background:var(--green)"></span>Backend
+    </button>
+    <button class="pill" data-filter="frontend" onclick="filterCourses(this)">
+      <span class="pill-dot" style="background:var(--blue)"></span>Frontend
+    </button>
+    <button class="pill" data-filter="devops" onclick="filterCourses(this)">
+      <span class="pill-dot" style="background:var(--teal)"></span>DevOps
+    </button>
+    <button class="pill" data-filter="mobile" onclick="filterCourses(this)">
+      <span class="pill-dot" style="background:var(--amber)"></span>Mobile
+    </button>
+    <button class="pill" data-filter="data" onclick="filterCourses(this)">
+      <span class="pill-dot" style="background:var(--purple)"></span>Data
+    </button>
   </div>
 </div>
 
 <!-- COURSES -->
 <div class="courses-section">
-  <div class="courses-grid">
+  <div class="courses-grid" id="courses-grid">
 
-    <!-- OOP with Java -->
-    <a class="course-card" href="core-java/index.html">
+    <!-- ── OOP with Java ── -->
+    <a class="course-card" href="core-java/index.html" data-category="backend">
       <div class="course-thumb thumb-java">
         <div class="course-thumb-bg"></div>
         <div class="glow"></div>
@@ -452,18 +370,11 @@
         <span class="course-badge badge-new">New</span>
       </div>
       <div class="course-body">
-        <div class="course-level">
-          <span class="level-dot dot-beginner"></span>Beginner
-        </div>
+        <div class="course-level"><span class="level-dot dot-beginner"></span>Beginner · Backend</div>
         <div class="course-title">OOP with Java</div>
-        <div class="course-desc">
-          Master object-oriented programming in Java — classes, inheritance, polymorphism, interfaces, and design patterns. Build a solid foundation that makes every framework easier to learn.
-        </div>
+        <div class="course-desc">Master object-oriented programming in Java — classes, inheritance, polymorphism, interfaces, and design patterns. The foundation every framework is built on.</div>
         <div class="course-tags">
-          <span class="tag">Java</span>
-          <span class="tag">OOP</span>
-          <span class="tag">Design Patterns</span>
-          <span class="tag">Interfaces</span>
+          <span class="tag">Java</span><span class="tag">OOP</span><span class="tag">Design Patterns</span><span class="tag">Interfaces</span>
         </div>
         <div class="course-rating">
           <span class="stars">★★★★★</span>
@@ -480,8 +391,8 @@
       </div>
     </a>
 
-    <!-- Spring Boot Fundamentals -->
-    <a class="course-card" href="spring-boot/index.html">
+    <!-- ── Spring Boot ── -->
+    <a class="course-card" href="spring-boot/index.html" data-category="backend">
       <div class="course-thumb thumb-spring">
         <div class="course-thumb-bg"></div>
         <div class="glow"></div>
@@ -489,18 +400,11 @@
         <span class="course-badge badge-bestseller">Bestseller</span>
       </div>
       <div class="course-body">
-        <div class="course-level">
-          <span class="level-dot dot-intermediate"></span>Intermediate
-        </div>
+        <div class="course-level"><span class="level-dot dot-intermediate"></span>Intermediate · Backend</div>
         <div class="course-title">Spring Boot Fundamentals</div>
-        <div class="course-desc">
-          A no-magic walkthrough of Spring Boot — from zero to a production-ready REST API. Covers auto-configuration, Spring Data JPA, validation, security basics, and testing.
-        </div>
+        <div class="course-desc">A no-magic walkthrough of Spring Boot — from zero to a production-ready REST API. Covers auto-configuration, Spring Data JPA, validation, security, and testing.</div>
         <div class="course-tags">
-          <span class="tag">Spring Boot</span>
-          <span class="tag">REST API</span>
-          <span class="tag">JPA</span>
-          <span class="tag">Testing</span>
+          <span class="tag">Spring Boot</span><span class="tag">REST API</span><span class="tag">JPA</span><span class="tag">Testing</span>
         </div>
         <div class="course-rating">
           <span class="stars">★★★★★</span>
@@ -517,12 +421,234 @@
       </div>
     </a>
 
+    <!-- ── React ── -->
+    <a class="course-card soon" data-category="frontend">
+      <div class="course-thumb thumb-react">
+        <div class="course-thumb-bg"></div>
+        <div class="glow"></div>
+        <div class="course-thumb-icon">⚛️</div>
+        <span class="course-badge badge-soon">Coming Soon</span>
+      </div>
+      <div class="course-body">
+        <div class="course-level"><span class="level-dot dot-beginner"></span>Beginner · Frontend</div>
+        <div class="course-title">React — Build Modern UIs</div>
+        <div class="course-desc">Learn React from scratch — components, hooks, state management, and data fetching. Build real interfaces without cargo-culting patterns you don't understand.</div>
+        <div class="course-tags">
+          <span class="tag">React</span><span class="tag">Hooks</span><span class="tag">JSX</span><span class="tag">State</span>
+        </div>
+      </div>
+      <div class="course-footer">
+        <div class="course-meta-info">
+          <div class="meta-item"><span class="meta-icon">▶</span> ~12 lessons</div>
+          <div class="meta-item"><span class="meta-icon">⏱</span> ~5 hrs</div>
+        </div>
+        <span class="cta-soon">Notify me</span>
+      </div>
+    </a>
+
+    <!-- ── TypeScript ── -->
+    <a class="course-card soon" data-category="frontend">
+      <div class="course-thumb thumb-ts">
+        <div class="course-thumb-bg"></div>
+        <div class="glow"></div>
+        <div class="course-thumb-icon">🔷</div>
+        <span class="course-badge badge-soon">Coming Soon</span>
+      </div>
+      <div class="course-body">
+        <div class="course-level"><span class="level-dot dot-intermediate"></span>Intermediate · Frontend</div>
+        <div class="course-title">TypeScript Deep Dive</div>
+        <div class="course-desc">Go beyond basic type annotations — generics, utility types, conditional types, and how to design APIs that make invalid states unrepresentable.</div>
+        <div class="course-tags">
+          <span class="tag">TypeScript</span><span class="tag">Generics</span><span class="tag">Type System</span>
+        </div>
+      </div>
+      <div class="course-footer">
+        <div class="course-meta-info">
+          <div class="meta-item"><span class="meta-icon">▶</span> ~10 lessons</div>
+          <div class="meta-item"><span class="meta-icon">⏱</span> ~4 hrs</div>
+        </div>
+        <span class="cta-soon">Notify me</span>
+      </div>
+    </a>
+
+    <!-- ── Node.js ── -->
+    <a class="course-card soon" data-category="backend">
+      <div class="course-thumb thumb-node">
+        <div class="course-thumb-bg"></div>
+        <div class="glow"></div>
+        <div class="course-thumb-icon">🟩</div>
+        <span class="course-badge badge-soon">Coming Soon</span>
+      </div>
+      <div class="course-body">
+        <div class="course-level"><span class="level-dot dot-beginner"></span>Beginner · Backend</div>
+        <div class="course-title">Node.js & Express</div>
+        <div class="course-desc">Build REST APIs with Node.js and Express — routing, middleware, authentication, error handling, and connecting to a real database. No black boxes.</div>
+        <div class="course-tags">
+          <span class="tag">Node.js</span><span class="tag">Express</span><span class="tag">REST</span><span class="tag">JavaScript</span>
+        </div>
+      </div>
+      <div class="course-footer">
+        <div class="course-meta-info">
+          <div class="meta-item"><span class="meta-icon">▶</span> ~10 lessons</div>
+          <div class="meta-item"><span class="meta-icon">⏱</span> ~4 hrs</div>
+        </div>
+        <span class="cta-soon">Notify me</span>
+      </div>
+    </a>
+
+    <!-- ── Python ── -->
+    <a class="course-card soon" data-category="backend">
+      <div class="course-thumb thumb-python">
+        <div class="course-thumb-bg"></div>
+        <div class="glow"></div>
+        <div class="course-thumb-icon">🐍</div>
+        <span class="course-badge badge-soon">Coming Soon</span>
+      </div>
+      <div class="course-body">
+        <div class="course-level"><span class="level-dot dot-beginner"></span>Beginner · Backend</div>
+        <div class="course-title">Python for Backend</div>
+        <div class="course-desc">Build backend services with Python and FastAPI — type hints, async endpoints, dependency injection, and SQLAlchemy for database access. Fast, modern, practical.</div>
+        <div class="course-tags">
+          <span class="tag">Python</span><span class="tag">FastAPI</span><span class="tag">SQLAlchemy</span><span class="tag">Async</span>
+        </div>
+      </div>
+      <div class="course-footer">
+        <div class="course-meta-info">
+          <div class="meta-item"><span class="meta-icon">▶</span> ~12 lessons</div>
+          <div class="meta-item"><span class="meta-icon">⏱</span> ~5 hrs</div>
+        </div>
+        <span class="cta-soon">Notify me</span>
+      </div>
+    </a>
+
+    <!-- ── Docker & Kubernetes ── -->
+    <a class="course-card soon" data-category="devops">
+      <div class="course-thumb thumb-docker">
+        <div class="course-thumb-bg"></div>
+        <div class="glow"></div>
+        <div class="course-thumb-icon">🐳</div>
+        <span class="course-badge badge-soon">Coming Soon</span>
+      </div>
+      <div class="course-body">
+        <div class="course-level"><span class="level-dot dot-intermediate"></span>Intermediate · DevOps</div>
+        <div class="course-title">Docker & Kubernetes</div>
+        <div class="course-desc">Containerise your apps with Docker and orchestrate them with Kubernetes — images, volumes, networking, deployments, services, and Helm charts explained from scratch.</div>
+        <div class="course-tags">
+          <span class="tag">Docker</span><span class="tag">Kubernetes</span><span class="tag">Helm</span><span class="tag">CI/CD</span>
+        </div>
+      </div>
+      <div class="course-footer">
+        <div class="course-meta-info">
+          <div class="meta-item"><span class="meta-icon">▶</span> ~14 lessons</div>
+          <div class="meta-item"><span class="meta-icon">⏱</span> ~6 hrs</div>
+        </div>
+        <span class="cta-soon">Notify me</span>
+      </div>
+    </a>
+
+    <!-- ── Git ── -->
+    <a class="course-card soon" data-category="devops">
+      <div class="course-thumb thumb-git">
+        <div class="course-thumb-bg"></div>
+        <div class="glow"></div>
+        <div class="course-thumb-icon">🌿</div>
+        <span class="course-badge badge-soon">Coming Soon</span>
+      </div>
+      <div class="course-body">
+        <div class="course-level"><span class="level-dot dot-beginner"></span>Beginner · DevOps</div>
+        <div class="course-title">Git & GitHub for Teams</div>
+        <div class="course-desc">Beyond <code style="font-size:12px;color:var(--green)">git add .</code> — branching strategies, rebasing, resolving conflicts, pull request workflows, and protecting your main branch like a professional.</div>
+        <div class="course-tags">
+          <span class="tag">Git</span><span class="tag">GitHub</span><span class="tag">Branching</span><span class="tag">CI/CD</span>
+        </div>
+      </div>
+      <div class="course-footer">
+        <div class="course-meta-info">
+          <div class="meta-item"><span class="meta-icon">▶</span> ~8 lessons</div>
+          <div class="meta-item"><span class="meta-icon">⏱</span> ~3 hrs</div>
+        </div>
+        <span class="cta-soon">Notify me</span>
+      </div>
+    </a>
+
+    <!-- ── SQL ── -->
+    <a class="course-card soon" data-category="data">
+      <div class="course-thumb thumb-sql">
+        <div class="course-thumb-bg"></div>
+        <div class="glow"></div>
+        <div class="course-thumb-icon">🗄️</div>
+        <span class="course-badge badge-soon">Coming Soon</span>
+      </div>
+      <div class="course-body">
+        <div class="course-level"><span class="level-dot dot-beginner"></span>Beginner · Data</div>
+        <div class="course-title">PostgreSQL & SQL Mastery</div>
+        <div class="course-desc">Write SQL that actually performs — joins, subqueries, window functions, indexes, query planning, and schema design patterns. Using PostgreSQL, the database that scales.</div>
+        <div class="course-tags">
+          <span class="tag">PostgreSQL</span><span class="tag">SQL</span><span class="tag">Indexing</span><span class="tag">Schema Design</span>
+        </div>
+      </div>
+      <div class="course-footer">
+        <div class="course-meta-info">
+          <div class="meta-item"><span class="meta-icon">▶</span> ~10 lessons</div>
+          <div class="meta-item"><span class="meta-icon">⏱</span> ~4 hrs</div>
+        </div>
+        <span class="cta-soon">Notify me</span>
+      </div>
+    </a>
+
+    <!-- ── Flutter ── -->
+    <a class="course-card soon" data-category="mobile">
+      <div class="course-thumb thumb-flutter">
+        <div class="course-thumb-bg"></div>
+        <div class="glow"></div>
+        <div class="course-thumb-icon">📱</div>
+        <span class="course-badge badge-soon">Coming Soon</span>
+      </div>
+      <div class="course-body">
+        <div class="course-level"><span class="level-dot dot-intermediate"></span>Intermediate · Mobile</div>
+        <div class="course-title">Flutter Mobile Development</div>
+        <div class="course-desc">Build cross-platform iOS and Android apps with Flutter and Dart — widgets, state management, navigation, API integration, and publishing to the app stores.</div>
+        <div class="course-tags">
+          <span class="tag">Flutter</span><span class="tag">Dart</span><span class="tag">iOS</span><span class="tag">Android</span>
+        </div>
+      </div>
+      <div class="course-footer">
+        <div class="course-meta-info">
+          <div class="meta-item"><span class="meta-icon">▶</span> ~14 lessons</div>
+          <div class="meta-item"><span class="meta-icon">⏱</span> ~6 hrs</div>
+        </div>
+        <span class="cta-soon">Notify me</span>
+      </div>
+    </a>
+
   </div>
+  <div class="no-results" id="no-results">No courses in this category yet — check back soon.</div>
 </div>
 
 <footer>
   &copy; 2026 learn.dev &nbsp;·&nbsp; Built for developers who learn by building.
 </footer>
 
+<script>
+function filterCourses(btn) {
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+
+  const filter = btn.dataset.filter;
+  const cards = document.querySelectorAll('.course-card');
+  let visible = 0;
+
+  cards.forEach(card => {
+    const match = filter === 'all' || card.dataset.category === filter;
+    card.style.display = match ? '' : 'none';
+    if (match) visible++;
+  });
+
+  const countEl = document.getElementById('filter-count');
+  countEl.textContent = visible + (visible === 1 ? ' course' : ' courses');
+
+  document.getElementById('no-results').classList.toggle('visible', visible === 0);
+}
+</script>
 </body>
 </html>

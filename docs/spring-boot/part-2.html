@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Step 2 — Setting Up Your Environment · Spring Boot</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Fraunces:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f1117;
+    --surface: #161b27;
+    --surface2: #1e2535;
+    --border: #2a3147;
+    --text: #e8eaf0;
+    --muted: #7b8499;
+    --faint: #3d4560;
+    --green: #4ade80;
+    --green-dim: #1a3d2b;
+    --green-text: #86efac;
+    --amber: #fbbf24;
+    --amber-dim: #3d2e08;
+    --blue: #60a5fa;
+    --blue-dim: #0f2040;
+    --coral: #f87171;
+    --coral-dim: #3d1212;
+    --purple: #a78bfa;
+    --purple-dim: #1e1440;
+    --teal: #2dd4bf;
+    --teal-dim: #0d2e2a;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Fraunces', Georgia, serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.75;
+  }
+
+  /* ── top bar ── */
+  .topbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 40px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .back-link {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: .05em;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: color .15s;
+  }
+  .back-link:hover { color: var(--green); }
+  .topbar-sep { color: var(--faint); font-size: 13px; }
+  .step-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: var(--green-dim);
+    color: var(--green);
+    border: 1px solid var(--green);
+    border-radius: 4px;
+    padding: 2px 8px;
+    letter-spacing: .05em;
+  }
+  .topbar-title {
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--muted);
+  }
+  .topbar-title strong { color: var(--text); font-weight: 400; }
+
+  /* ── layout ── */
+  .page { max-width: 860px; margin: 0 auto; padding: 60px 40px 120px; }
+
+  /* ── hero ── */
+  .hero { margin-bottom: 60px; }
+  .hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--green);
+    letter-spacing: .1em;
+    margin-bottom: 14px;
+  }
+  .hero h1 {
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 300;
+    line-height: 1.15;
+    letter-spacing: -.02em;
+    margin-bottom: 20px;
+  }
+  .hero h1 em { font-style: italic; color: var(--muted); }
+  .hero-lead {
+    font-size: 18px;
+    font-weight: 300;
+    color: var(--muted);
+    max-width: 560px;
+    line-height: 1.8;
+  }
+  .hero-lead strong { color: var(--text); font-weight: 400; }
+
+  /* ── section ── */
+  .section { margin-bottom: 64px; }
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  h2 { font-size: 24px; font-weight: 400; margin-bottom: 16px; letter-spacing: -.01em; }
+  p { color: var(--muted); margin-bottom: 14px; font-size: 16px; }
+  p strong { color: var(--text); font-weight: 400; }
+
+  /* ── tool cards ── */
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+  .tool-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 18px;
+    cursor: pointer;
+    transition: border-color .15s, transform .12s;
+    text-align: center;
+  }
+  .tool-card:hover { transform: translateY(-2px); }
+  .tool-card.active-jdk  { border-color: var(--amber); }
+  .tool-card.active-mvn  { border-color: var(--blue); }
+  .tool-card.active-ide  { border-color: var(--purple); }
+  .tool-icon { font-size: 30px; margin-bottom: 10px; }
+  .tool-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .tool-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: .1em;
+    margin-bottom: 10px;
+  }
+  .tool-card.active-jdk .tool-tag { color: var(--amber); }
+  .tool-card.active-mvn .tool-tag { color: var(--blue); }
+  .tool-card.active-ide .tool-tag { color: var(--purple); }
+  .tool-short { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+  .tool-detail {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 24px;
+    min-height: 80px;
+    margin-bottom: 16px;
+    transition: all .2s;
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.75;
+  }
+  .tool-detail strong { color: var(--text); font-weight: 400; }
+  .tool-detail .detail-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .08em;
+    margin-bottom: 10px;
+  }
+  .detail-title.jdk { color: var(--amber); }
+  .detail-title.mvn { color: var(--blue); }
+  .detail-title.ide { color: var(--purple); }
+
+  /* ── OS switcher ── */
+  .os-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .os-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+  }
+  .os-tab {
+    flex: 1;
+    padding: 12px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: .04em;
+    cursor: pointer;
+    text-align: center;
+    transition: background .15s, color .15s;
+    color: var(--muted);
+    border: none;
+    background: transparent;
+  }
+  .os-tab:hover { color: var(--text); background: var(--surface2); }
+  .os-tab.active { background: var(--blue-dim); color: var(--blue); }
+  .os-body { padding: 28px; }
+  .os-panel { display: none; }
+  .os-panel.active { display: block; }
+
+  .steps-list { display: flex; flex-direction: column; gap: 16px; }
+  .step-item {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .step-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .step-content { flex: 1; min-width: 0; }
+  .step-desc {
+    font-size: 15px;
+    color: var(--muted);
+    margin-bottom: 8px;
+    line-height: 1.65;
+  }
+  .step-desc strong { color: var(--text); font-weight: 400; }
+
+  /* ── code block ── */
+  .code-block {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.8;
+    overflow-x: auto;
+    margin-top: 8px;
+    position: relative;
+  }
+  .code-block .c-prompt { color: var(--faint); user-select: none; }
+  .code-block .c-cmd    { color: var(--green-text); }
+  .code-block .c-flag   { color: var(--blue); }
+  .code-block .c-str    { color: var(--amber); }
+  .code-block .c-out    { color: var(--muted); }
+  .code-block .c-ok     { color: var(--green); }
+  .code-block .c-comment { color: var(--faint); font-style: italic; }
+
+  /* ── terminal verify ── */
+  .terminal-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .terminal-topbar {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; }
+  .dot-y { background: #febc2e; }
+  .dot-g { background: #28c840; }
+  .terminal-topbar span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    margin-left: 8px;
+  }
+  .terminal-body { padding: 8px 0; }
+
+  .term-block {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background .12s;
+  }
+  .term-block:last-child { border-bottom: none; }
+  .term-block:hover { background: var(--surface2); }
+  .term-block.done { background: var(--green-dim); }
+  .term-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 6px;
+  }
+  .term-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: .08em;
+  }
+  .term-block.done .term-label { color: var(--green); }
+  .term-check-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--faint);
+    letter-spacing: .06em;
+    pointer-events: none;
+  }
+  .term-block.done .term-check-btn { color: var(--green); }
+  .term-cmd-line {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--green-text);
+    margin-bottom: 4px;
+  }
+  .term-cmd-line::before { content: '$ '; color: var(--faint); }
+  .term-output {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+    padding-left: 14px;
+    border-left: 2px solid var(--border);
+    margin-top: 6px;
+  }
+  .term-block.done .term-output { border-left-color: var(--green); }
+  .term-output .out-ok { color: var(--green); }
+  .term-output .out-version { color: var(--amber); }
+
+  /* ── checklist ── */
+  .checklist { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: border-color .15s, background .15s;
+    user-select: none;
+  }
+  .check-item:hover { border-color: var(--faint); }
+  .check-item.checked { background: var(--green-dim); border-color: var(--green); }
+  .check-box {
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 12px;
+    transition: all .15s;
+  }
+  .check-item.checked .check-box {
+    background: var(--green);
+    border-color: var(--green);
+    color: #0a1f14;
+  }
+  .check-text {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .check-item.checked .check-text { color: var(--green-text); }
+  .check-text strong { color: var(--text); font-weight: 400; }
+  .check-item.checked .check-text strong { color: var(--green); }
+  .check-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-left: auto;
+    background: var(--surface2);
+    color: var(--faint);
+    border: 1px solid var(--border);
+  }
+
+  /* ── callout ── */
+  .callout {
+    border-radius: 10px;
+    padding: 18px 22px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+  .callout-green { background: var(--green-dim); border: 1px solid var(--green); }
+  .callout-amber { background: var(--amber-dim); border: 1px solid var(--amber); }
+  .callout-blue  { background: var(--blue-dim);  border: 1px solid var(--blue); }
+  .callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 2px; }
+  .callout-text { font-size: 15px; line-height: 1.7; font-family: 'Fraunces', serif; }
+  .callout-green .callout-text { color: var(--green-text); }
+  .callout-amber .callout-text { color: var(--amber); }
+  .callout-blue  .callout-text { color: var(--blue); }
+  .callout-text strong { font-weight: 600; }
+
+  /* ── CTA ── */
+  .cta {
+    margin-top: 64px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 32px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .cta-left h3 { font-size: 20px; font-weight: 300; margin-bottom: 6px; }
+  .cta-left p  { font-size: 14px; color: var(--muted); margin: 0; }
+  .cta-btn {
+    background: var(--green);
+    color: #0a1f14;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    letter-spacing: .03em;
+    transition: opacity .15s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .cta-btn:hover { opacity: .85; }
+
+  /* ── progress bar ── */
+  .progress-bar {
+    width: 100%;
+    height: 3px;
+    background: var(--surface2);
+    margin-bottom: 40px;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 20%;
+    background: linear-gradient(90deg, var(--green) 0%, var(--teal) 100%);
+    border-radius: 2px;
+  }
+
+  @media (max-width: 600px) {
+    .page { padding: 32px 20px 80px; }
+    .topbar { padding: 12px 20px; }
+    .tools-grid { grid-template-columns: 1fr; }
+    .os-tabs { flex-direction: row; }
+    .os-tab { font-size: 11px; padding: 10px 8px; }
+    .cta { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<!-- top bar -->
+<div class="topbar">
+  <a class="back-link" href="index.html">← All Parts</a>
+  <span class="topbar-sep">/</span>
+  <span class="step-badge">STEP 2 / 10</span>
+  <span class="topbar-title">Spring Boot &nbsp;·&nbsp; <strong>Setting Up Your Environment</strong></span>
+</div>
+
+<div class="page">
+
+  <!-- progress -->
+  <div class="progress-bar"><div class="progress-fill"></div></div>
+
+  <!-- hero -->
+  <div class="hero">
+    <div class="hero-eyebrow">STEP 2 — SETUP</div>
+    <h1>Three tools.<br /><em>Ten minutes.</em></h1>
+    <p class="hero-lead">Before you can run a single Spring Boot app, you need <strong>three things installed</strong>. This is the only time you'll do this — let's get it right and move on.</p>
+  </div>
+
+  <!-- section 1: the three tools -->
+  <div class="section">
+    <div class="section-label">What you need</div>
+    <h2>The three tools — nothing more</h2>
+    <p>Every Spring Boot developer runs on the same three tools. Click each one to understand <strong>why it exists</strong> and what happens if it's missing.</p>
+
+    <div class="tools-grid">
+      <div class="tool-card" data-tool="jdk" onclick="selectTool(this)">
+        <div class="tool-icon">☕</div>
+        <div class="tool-name">JDK 21</div>
+        <div class="tool-tag">RUNTIME</div>
+        <div class="tool-short">Java itself — Spring Boot can't run without it</div>
+      </div>
+      <div class="tool-card" data-tool="maven" onclick="selectTool(this)">
+        <div class="tool-icon">📦</div>
+        <div class="tool-name">Maven 3.9+</div>
+        <div class="tool-tag">BUILD TOOL</div>
+        <div class="tool-short">Downloads dependencies and builds your project</div>
+      </div>
+      <div class="tool-card" data-tool="ide" onclick="selectTool(this)">
+        <div class="tool-icon">💻</div>
+        <div class="tool-name">IntelliJ IDEA</div>
+        <div class="tool-tag">IDE</div>
+        <div class="tool-short">Best IDE for Spring Boot — Community edition is free</div>
+      </div>
+    </div>
+
+    <div class="tool-detail" id="tool-detail">
+      <em style="color:var(--faint)">← Click a tool above to understand why you need it.</em>
+    </div>
+
+    <div class="callout callout-amber">
+      <span class="callout-icon">💡</span>
+      <div class="callout-text">Use <strong>JDK 21</strong> specifically — it's the current Long-Term Support (LTS) release. Spring Boot 3.x requires Java 17 or newer, and 21 is the sweet spot with the longest support window.</div>
+    </div>
+  </div>
+
+  <!-- section 2: install guide -->
+  <div class="section">
+    <div class="section-label">Install guide</div>
+    <h2>Step-by-step for your operating system</h2>
+    <p>Select your OS below. Follow each step in order — the order matters because Maven uses the JDK.</p>
+
+    <div class="os-wrap">
+      <div class="os-tabs">
+        <button class="os-tab active" onclick="selectOS('mac')">🍎 Mac</button>
+        <button class="os-tab" onclick="selectOS('windows')">🪟 Windows</button>
+        <button class="os-tab" onclick="selectOS('linux')">🐧 Linux</button>
+      </div>
+      <div class="os-body">
+
+        <!-- Mac -->
+        <div class="os-panel active" id="os-mac">
+          <div class="steps-list">
+            <div class="step-item">
+              <div class="step-num">1</div>
+              <div class="step-content">
+                <div class="step-desc"><strong>Install Homebrew</strong> — the Mac package manager. If you already have it, skip to step 2.</div>
+                <div class="code-block"><span class="c-prompt">$</span> <span class="c-cmd">/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"</span></div>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">2</div>
+              <div class="step-content">
+                <div class="step-desc"><strong>Install JDK 21</strong> via Homebrew. This downloads and installs OpenJDK 21 automatically.</div>
+                <div class="code-block"><span class="c-prompt">$</span> <span class="c-cmd">brew install openjdk@21</span></div>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">3</div>
+              <div class="step-content">
+                <div class="step-desc"><strong>Link the JDK</strong> so macOS can find it. Homebrew prints this command after the install — copy it from there.</div>
+                <div class="code-block"><span class="c-prompt">$</span> <span class="c-cmd">sudo ln -sfn /opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk \
+    /Library/Java/JavaVirtualMachines/openjdk-21.jdk</span>
+<span class="c-comment"># Intel Mac path: /usr/local/opt/openjdk@21/...</span></div>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">4</div>
+              <div class="step-content">
+                <div class="step-desc"><strong>Install Maven</strong> — Homebrew handles this too.</div>
+                <div class="code-block"><span class="c-prompt">$</span> <span class="c-cmd">brew install maven</span></div>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">5</div>
+              <div class="step-content">
+                <div class="step-desc"><strong>Install IntelliJ IDEA</strong> — search for "IntelliJ IDEA Community" on the JetBrains website and download the macOS version. The Community edition is completely free.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Windows -->
+        <div class="os-panel" id="os-windows">
+          <div class="steps-list">
+            <div class="step-item">
+              <div class="step-num">1</div>
+              <div class="step-content">
+                <div class="step-desc"><strong>Install JDK 21</strong> using winget (built into Windows 11). Run PowerShell as Administrator.</div>
+                <div class="code-block"><span class="c-prompt">&gt;</span> <span class="c-cmd">winget install Microsoft.OpenJDK.21</span></div>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">2</div>
+              <div class="step-content">
+                <div class="step-desc"><strong>Set JAVA_HOME</strong> — Maven needs this environment variable to find your JDK. Open System Properties → Environment Variables and add:</div>
+                <div class="code-block"><span class="c-comment">// Variable name:</span>
+JAVA_HOME
+<span class="c-comment">// Variable value (adjust path if different):</span>
+<span class="c-str">C:\Program Files\Microsoft\jdk-21.0.x.y-hotspot</span></div>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">3</div>
+              <div class="step-content">
+                <div class="step-desc"><strong>Install Maven</strong> — download the binary zip from the Apache Maven website, extract it (e.g. to <code style="color:var(--green-text);font-family:'JetBrains Mono',monospace">C:\maven</code>), then add its <code style="color:var(--green-text);font-family:'JetBrains Mono',monospace">bin</code> folder to your <code style="color:var(--green-text);font-family:'JetBrains Mono',monospace">PATH</code>.</div>
+                <div class="code-block"><span class="c-comment">// Add to PATH in Environment Variables:</span>
+<span class="c-str">C:\maven\apache-maven-3.9.x\bin</span></div>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">4</div>
+              <div class="step-content">
+                <div class="step-desc"><strong>Install IntelliJ IDEA</strong> — search for "IntelliJ IDEA Community" on the JetBrains website and download the Windows installer (.exe). Run it and follow the defaults.</div>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">5</div>
+              <div class="step-content">
+                <div class="step-desc"><strong>Restart your terminal</strong> after setting environment variables — the changes don't apply to already-open windows.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Linux -->
+        <div class="os-panel" id="os-linux">
+          <div class="steps-list">
+            <div class="step-item">
+              <div class="step-num">1</div>
+              <div class="step-content">
+                <div class="step-desc"><strong>Install JDK 21</strong> — command differs by distro. Ubuntu/Debian:</div>
+                <div class="code-block"><span class="c-prompt">$</span> <span class="c-cmd">sudo apt update</span>
+<span class="c-prompt">$</span> <span class="c-cmd">sudo apt install openjdk-21-jdk</span>
+<span class="c-comment"># Fedora/RHEL:</span>
+<span class="c-prompt">$</span> <span class="c-cmd">sudo dnf install java-21-openjdk-devel</span></div>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">2</div>
+              <div class="step-content">
+                <div class="step-desc"><strong>Verify JAVA_HOME</strong> is set. If not, add it to your <code style="color:var(--green-text);font-family:'JetBrains Mono',monospace">~/.bashrc</code> or <code style="color:var(--green-text);font-family:'JetBrains Mono',monospace">~/.zshrc</code>.</div>
+                <div class="code-block"><span class="c-comment"># Add to ~/.bashrc</span>
+<span class="c-cmd">export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64</span>
+<span class="c-cmd">export PATH=$JAVA_HOME/bin:$PATH</span>
+<span class="c-prompt">$</span> <span class="c-cmd">source ~/.bashrc</span></div>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">3</div>
+              <div class="step-content">
+                <div class="step-desc"><strong>Install Maven</strong> via your package manager.</div>
+                <div class="code-block"><span class="c-prompt">$</span> <span class="c-cmd">sudo apt install maven</span>
+<span class="c-comment"># Fedora/RHEL:</span>
+<span class="c-prompt">$</span> <span class="c-cmd">sudo dnf install maven</span></div>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">4</div>
+              <div class="step-content">
+                <div class="step-desc"><strong>Install IntelliJ IDEA</strong> — the easiest way on Linux is via the JetBrains Toolbox App. Download it from the JetBrains website and it manages updates automatically. Alternatively, install from your distro's Snap store: <code style="color:var(--green-text);font-family:'JetBrains Mono',monospace">sudo snap install intellij-idea-community --classic</code></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- section 3: verify -->
+  <div class="section">
+    <div class="section-label">Verification</div>
+    <h2>Prove it works — three commands</h2>
+    <p>Run these in your terminal. Each should print a version number. <strong>Click a command block to mark it done</strong> as you go.</p>
+
+    <div class="terminal-wrap">
+      <div class="terminal-topbar">
+        <div class="dot dot-r"></div>
+        <div class="dot dot-y"></div>
+        <div class="dot dot-g"></div>
+        <span>terminal</span>
+      </div>
+      <div class="terminal-body">
+
+        <div class="term-block" onclick="toggleDone(this)">
+          <div class="term-header">
+            <span class="term-label">CHECK 1 — Java runtime</span>
+            <span class="term-check-btn">click to mark done ✓</span>
+          </div>
+          <div class="term-cmd-line">java --version</div>
+          <div class="term-output">
+            <span class="out-ok">openjdk</span> <span class="out-version">21.0.x</span> 2024-01-16 LTS<br />
+            OpenJDK Runtime Environment (build 21.0.x+...)<br />
+            <span class="out-ok">✓ You want to see "21" — anything lower and Spring Boot 3.x won't start.</span>
+          </div>
+        </div>
+
+        <div class="term-block" onclick="toggleDone(this)">
+          <div class="term-header">
+            <span class="term-label">CHECK 2 — Java compiler</span>
+            <span class="term-check-btn">click to mark done ✓</span>
+          </div>
+          <div class="term-cmd-line">javac --version</div>
+          <div class="term-output">
+            <span class="out-version">javac 21.0.x</span><br />
+            <span class="out-ok">✓ Must match your runtime. If this fails, you installed JRE instead of JDK — you need the full JDK.</span>
+          </div>
+        </div>
+
+        <div class="term-block" onclick="toggleDone(this)">
+          <div class="term-header">
+            <span class="term-label">CHECK 3 — Maven build tool</span>
+            <span class="term-check-btn">click to mark done ✓</span>
+          </div>
+          <div class="term-cmd-line">mvn --version</div>
+          <div class="term-output">
+            Apache Maven <span class="out-version">3.9.x</span> (...)<br />
+            Maven home: /usr/local/Cellar/maven/3.9.x/libexec<br />
+            Java version: <span class="out-version">21</span>, vendor: ...<br />
+            <span class="out-ok">✓ Critical: the "Java version" line here must also show 21. If it shows a different version, Maven is pointing to the wrong JDK.</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="callout callout-blue">
+      <span class="callout-icon">🔧</span>
+      <div class="callout-text"><strong>mvn shows the wrong Java version?</strong> Maven reads the JAVA_HOME environment variable. Set it to your JDK 21 path and restart your terminal. Run <code style="font-family:'JetBrains Mono',monospace;color:var(--blue)">echo $JAVA_HOME</code> to see what it's currently set to.</div>
+    </div>
+  </div>
+
+  <!-- section 4: setup checklist -->
+  <div class="section">
+    <div class="section-label">Setup checklist</div>
+    <h2>Everything in one place</h2>
+    <p>Tick each item as you complete it. Don't move to Step 3 until all five are checked — future steps assume a working environment.</p>
+
+    <div class="checklist">
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text"><strong>JDK 21 installed</strong> — <code style="font-family:'JetBrains Mono',monospace">java --version</code> shows 21.x</div>
+        <span class="check-tag">required</span>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text"><strong>javac available</strong> — <code style="font-family:'JetBrains Mono',monospace">javac --version</code> shows 21.x</div>
+        <span class="check-tag">required</span>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text"><strong>Maven installed</strong> — <code style="font-family:'JetBrains Mono',monospace">mvn --version</code> shows 3.9+ using Java 21</div>
+        <span class="check-tag">required</span>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text"><strong>IntelliJ IDEA</strong> installed and opens without errors</div>
+        <span class="check-tag">required</span>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text"><strong>JAVA_HOME</strong> is set and points to JDK 21 (run <code style="font-family:'JetBrains Mono',monospace">echo $JAVA_HOME</code>)</div>
+        <span class="check-tag">recommended</span>
+      </div>
+    </div>
+
+    <div class="callout callout-green">
+      <span class="callout-icon">✅</span>
+      <div class="callout-text"><strong>All five checked? You're done with setup — forever.</strong> You won't touch these tools again in this course. Next step: generate your first Spring Boot project and watch it boot up in under 30 seconds.</div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta">
+    <div class="cta-left">
+      <h3>Ready for Step 3?</h3>
+      <p>Generate, run, and understand your first Spring Boot app — from zero to running in one sitting.</p>
+    </div>
+    <a class="cta-btn" href="part-3.html">Step 3 — Your First Spring Boot App →</a>
+  </div>
+
+</div>
+
+<script>
+// Tool detail content
+const toolDetails = {
+  jdk: {
+    cls: 'jdk',
+    title: 'JDK 21 — JAVA DEVELOPMENT KIT',
+    body: '<strong>Spring Boot is Java.</strong> Without the JDK, nothing runs — not Spring, not your code, nothing. We use JDK 21 specifically because it\'s the current <strong>Long-Term Support (LTS) release</strong>, meaning it receives security patches until 2031. Spring Boot 3.x dropped support for Java 8 and 11 — you need 17 or above. JDK 21 is the safe, future-proof choice.',
+  },
+  maven: {
+    cls: 'mvn',
+    title: 'MAVEN 3.9 — BUILD TOOL',
+    body: '<strong>Maven does two critical things:</strong> it downloads all your project\'s dependencies (Spring Boot, Jackson, Hibernate…) and it compiles and packages your app into a runnable JAR. You never download JAR files by hand — you declare what you need in <code style="color:var(--green-text);font-family:\'JetBrains Mono\',monospace">pom.xml</code> and Maven handles the rest. Without Maven, you\'d be copying library files manually like it\'s 2002.',
+  },
+  ide: {
+    cls: 'ide',
+    title: 'INTELLIJ IDEA — INTEGRATED DEVELOPMENT ENVIRONMENT',
+    body: '<strong>IntelliJ IDEA understands Spring Boot natively</strong> — it autocompletes annotations, highlights misconfigured beans, and can run your app with one click. The <strong>Community edition is completely free</strong> and covers everything in this course. You can use VS Code with the Spring Boot Extension Pack instead, but IntelliJ\'s Spring support is significantly deeper and worth the learning curve.',
+  },
+};
+
+function selectTool(card) {
+  document.querySelectorAll('.tool-card').forEach(c => {
+    c.classList.remove('active-jdk', 'active-mvn', 'active-ide');
+  });
+  const tool = card.dataset.tool;
+  if (tool === 'jdk') card.classList.add('active-jdk');
+  if (tool === 'maven') card.classList.add('active-mvn');
+  if (tool === 'ide') card.classList.add('active-ide');
+
+  const d = toolDetails[tool];
+  document.getElementById('tool-detail').innerHTML =
+    `<div class="detail-title ${d.cls}">${d.title}</div>${d.body}`;
+}
+
+// OS switcher
+function selectOS(os) {
+  document.querySelectorAll('.os-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.os-panel').forEach(p => p.classList.remove('active'));
+
+  const tabs = document.querySelectorAll('.os-tab');
+  const osMap = { mac: 0, windows: 1, linux: 2 };
+  tabs[osMap[os]].classList.add('active');
+  document.getElementById('os-' + os).classList.add('active');
+}
+
+// Terminal verify
+function toggleDone(block) {
+  block.classList.toggle('done');
+  const btn = block.querySelector('.term-check-btn');
+  btn.textContent = block.classList.contains('done') ? '✓ done' : 'click to mark done ✓';
+}
+
+// Checklist
+function toggleCheck(item) {
+  item.classList.toggle('checked');
+  const box = item.querySelector('.check-box');
+  box.textContent = item.classList.contains('checked') ? '✓' : '';
+}
+</script>
+</body>
+</html>

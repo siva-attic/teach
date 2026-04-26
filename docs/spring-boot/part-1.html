@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Step 1 — What is Spring Boot? · Spring Boot</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Fraunces:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f1117;
+    --surface: #161b27;
+    --surface2: #1e2535;
+    --border: #2a3147;
+    --text: #e8eaf0;
+    --muted: #7b8499;
+    --faint: #3d4560;
+    --green: #4ade80;
+    --green-dim: #1a3d2b;
+    --green-text: #86efac;
+    --amber: #fbbf24;
+    --amber-dim: #3d2e08;
+    --blue: #60a5fa;
+    --blue-dim: #0f2040;
+    --coral: #f87171;
+    --coral-dim: #3d1212;
+    --purple: #a78bfa;
+    --purple-dim: #1e1440;
+    --teal: #2dd4bf;
+    --teal-dim: #0d2e2a;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Fraunces', Georgia, serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.75;
+  }
+
+  /* ── top bar ── */
+  .topbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 40px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .back-link {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: .05em;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: color .15s;
+  }
+  .back-link:hover { color: var(--green); }
+  .topbar-sep { color: var(--faint); font-size: 13px; }
+  .step-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: var(--green-dim);
+    color: var(--green);
+    border: 1px solid var(--green);
+    border-radius: 4px;
+    padding: 2px 8px;
+    letter-spacing: .05em;
+  }
+  .topbar-title {
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--muted);
+  }
+  .topbar-title strong { color: var(--text); font-weight: 400; }
+
+  /* ── layout ── */
+  .page { max-width: 860px; margin: 0 auto; padding: 60px 40px 120px; }
+
+  /* ── hero ── */
+  .hero { margin-bottom: 60px; }
+  .hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--green);
+    letter-spacing: .1em;
+    margin-bottom: 14px;
+  }
+  .hero h1 {
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 300;
+    line-height: 1.15;
+    letter-spacing: -.02em;
+    margin-bottom: 20px;
+  }
+  .hero h1 em { font-style: italic; color: var(--muted); }
+  .hero-lead {
+    font-size: 18px;
+    font-weight: 300;
+    color: var(--muted);
+    max-width: 560px;
+    line-height: 1.8;
+  }
+  .hero-lead strong { color: var(--text); font-weight: 400; }
+
+  /* ── section ── */
+  .section { margin-bottom: 64px; }
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  h2 { font-size: 24px; font-weight: 400; margin-bottom: 16px; letter-spacing: -.01em; }
+  p { color: var(--muted); margin-bottom: 14px; font-size: 16px; }
+  p strong { color: var(--text); font-weight: 400; }
+
+  /* ── before / after toggle ── */
+  .ba-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .ba-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+  }
+  .ba-tab {
+    flex: 1;
+    padding: 12px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: .06em;
+    cursor: pointer;
+    text-align: center;
+    transition: background .15s, color .15s;
+    color: var(--muted);
+    border: none;
+    background: transparent;
+  }
+  .ba-tab.active-before { background: var(--coral-dim); color: var(--coral); }
+  .ba-tab.active-after  { background: var(--green-dim); color: var(--green); }
+  .ba-body { padding: 24px; }
+  .ba-panel { display: none; }
+  .ba-panel.active { display: block; }
+  .ba-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .08em;
+    margin-bottom: 14px;
+  }
+  .ba-label.before { color: var(--coral); }
+  .ba-label.after  { color: var(--green); }
+
+  /* ── code block ── */
+  .code-block {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 22px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.9;
+    overflow-x: auto;
+    margin-bottom: 12px;
+  }
+  .code-block .c-tag     { color: var(--blue); }
+  .code-block .c-attr    { color: var(--purple); }
+  .code-block .c-val     { color: var(--amber); }
+  .code-block .c-comment { color: var(--faint); }
+  .code-block .c-kw      { color: var(--coral); }
+  .code-block .c-type    { color: var(--blue); }
+  .code-block .c-ann     { color: var(--amber); }
+  .code-block .c-str     { color: var(--green-text); }
+  .code-block .c-method  { color: var(--green); }
+  .ba-note {
+    font-size: 14px;
+    color: var(--muted);
+    font-style: italic;
+    margin-top: 8px;
+  }
+
+  /* ── core ideas cards ── */
+  .ideas-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+  .idea-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 18px;
+    cursor: pointer;
+    transition: border-color .15s, transform .12s;
+    text-align: center;
+  }
+  .idea-card:hover { transform: translateY(-2px); }
+  .idea-card.active { border-color: var(--green); }
+  .idea-icon { font-size: 28px; margin-bottom: 10px; }
+  .idea-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .06em;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .idea-card.active .idea-name { color: var(--green); }
+  .idea-short { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+  .idea-detail {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 24px;
+    min-height: 80px;
+    margin-bottom: 16px;
+    transition: all .2s;
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.75;
+  }
+  .idea-detail strong { color: var(--text); font-weight: 400; }
+  .idea-detail .detail-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--green);
+    letter-spacing: .08em;
+    margin-bottom: 10px;
+  }
+
+  /* ── comparison table ── */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 16px;
+    font-size: 14px;
+  }
+  .compare-table th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .08em;
+    padding: 10px 16px;
+    text-align: left;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+  }
+  .compare-table th:nth-child(2) { color: var(--coral); }
+  .compare-table th:nth-child(3) { color: var(--green); }
+  .compare-table td {
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    vertical-align: top;
+    line-height: 1.65;
+    background: var(--surface);
+  }
+  .compare-table td:first-child {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+    background: var(--surface2);
+    white-space: nowrap;
+  }
+  .compare-table td .bad  { color: var(--coral); }
+  .compare-table td .good { color: var(--green); }
+
+  /* ── where it fits diagram ── */
+  .stack-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 16px;
+  }
+  .stack-layers {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .stack-layer {
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: opacity .15s, transform .12s;
+    border: 1px solid transparent;
+  }
+  .stack-layer:hover { transform: translateX(4px); }
+  .stack-layer.highlight { border-color: currentColor; }
+  .sl-your-code  { background: var(--green-dim);  color: var(--green);  }
+  .sl-sb         { background: var(--blue-dim);   color: var(--blue);   }
+  .sl-spring     { background: var(--purple-dim); color: var(--purple); }
+  .sl-jvm        { background: var(--amber-dim);  color: var(--amber);  }
+  .stack-layer .sl-label { font-weight: 600; }
+  .stack-layer .sl-note  { font-size: 11px; opacity: .7; }
+  .stack-desc {
+    background: var(--surface2);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-size: 14px;
+    color: var(--muted);
+    min-height: 52px;
+    transition: all .2s;
+    line-height: 1.7;
+  }
+  .stack-desc strong { color: var(--text); font-weight: 400; }
+
+  /* ── callout ── */
+  .callout {
+    border-radius: 10px;
+    padding: 18px 22px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+  .callout-green { background: var(--green-dim); border: 1px solid var(--green); }
+  .callout-amber { background: var(--amber-dim); border: 1px solid var(--amber); }
+  .callout-blue  { background: var(--blue-dim);  border: 1px solid var(--blue); }
+  .callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 2px; }
+  .callout-text { font-size: 15px; line-height: 1.7; font-family: 'Fraunces', serif; }
+  .callout-green .callout-text { color: var(--green-text); }
+  .callout-amber .callout-text { color: var(--amber); }
+  .callout-blue  .callout-text { color: var(--blue); }
+  .callout-text strong { font-weight: 600; }
+
+  /* ── CTA ── */
+  .cta {
+    margin-top: 64px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 32px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .cta-left h3 { font-size: 20px; font-weight: 300; margin-bottom: 6px; }
+  .cta-left p  { font-size: 14px; color: var(--muted); margin: 0; }
+  .cta-btn {
+    background: var(--green);
+    color: #0a1f14;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    letter-spacing: .03em;
+    transition: opacity .15s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .cta-btn:hover { opacity: .85; }
+
+  /* ── progress bar ── */
+  .progress-bar {
+    width: 100%;
+    height: 3px;
+    background: var(--surface2);
+    margin-bottom: 40px;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 10%;
+    background: linear-gradient(90deg, var(--green) 0%, var(--teal) 100%);
+    border-radius: 2px;
+  }
+
+  @media (max-width: 600px) {
+    .page { padding: 32px 20px 80px; }
+    .topbar { padding: 12px 20px; }
+    .ideas-grid { grid-template-columns: 1fr; }
+    .cta { flex-direction: column; }
+    .compare-table { font-size: 13px; }
+    .compare-table td:first-child { white-space: normal; }
+  }
+</style>
+</head>
+<body>
+
+<!-- top bar -->
+<div class="topbar">
+  <a class="back-link" href="index.html">← All Parts</a>
+  <span class="topbar-sep">/</span>
+  <span class="step-badge">STEP 1 / 10</span>
+  <span class="topbar-title">Spring Boot &nbsp;·&nbsp; <strong>What is Spring Boot?</strong></span>
+</div>
+
+<div class="page">
+
+  <!-- progress -->
+  <div class="progress-bar"><div class="progress-fill"></div></div>
+
+  <!-- hero -->
+  <div class="hero">
+    <div class="hero-eyebrow">STEP 1 — INTRODUCTION</div>
+    <h1>What is<br /><em>Spring Boot?</em></h1>
+    <p class="hero-lead">Before you write a single line of code, you need to understand <strong>the problem Spring Boot solves</strong> — and why that problem was so painful that it changed the whole Java ecosystem.</p>
+  </div>
+
+  <!-- section 1: the problem -->
+  <div class="section">
+    <div class="section-label">The problem it solves</div>
+    <h2>Spring without Boot was painful</h2>
+    <p>Spring Framework has been the gold standard for Java enterprise apps since 2003. But using it meant writing <strong>hundreds of lines of configuration</strong> before a single endpoint could run.</p>
+    <p>Toggle between the two approaches below to feel the difference yourself.</p>
+
+    <div class="ba-wrap">
+      <div class="ba-tabs">
+        <button class="ba-tab active-before" id="tab-before" onclick="showPanel('before')">BEFORE — Plain Spring (Spring MVC + XML)</button>
+        <button class="ba-tab" id="tab-after" onclick="showPanel('after')">AFTER — Spring Boot</button>
+      </div>
+      <div class="ba-body">
+        <div class="ba-panel active" id="panel-before">
+          <div class="ba-label before">// web.xml — deploy descriptor (required)</div>
+          <div class="code-block"><span class="c-tag">&lt;web-app&gt;</span>
+  <span class="c-tag">&lt;servlet&gt;</span>
+    <span class="c-tag">&lt;servlet-name&gt;</span>dispatcher<span class="c-tag">&lt;/servlet-name&gt;</span>
+    <span class="c-tag">&lt;servlet-class&gt;</span>DispatcherServlet<span class="c-tag">&lt;/servlet-class&gt;</span>
+    <span class="c-tag">&lt;init-param&gt;</span>
+      <span class="c-tag">&lt;param-name&gt;</span>contextConfigLocation<span class="c-tag">&lt;/param-name&gt;</span>
+      <span class="c-tag">&lt;param-value&gt;</span>/WEB-INF/spring-mvc.xml<span class="c-tag">&lt;/param-value&gt;</span>
+    <span class="c-tag">&lt;/init-param&gt;</span>
+    <span class="c-tag">&lt;load-on-startup&gt;</span>1<span class="c-tag">&lt;/load-on-startup&gt;</span>
+  <span class="c-tag">&lt;/servlet&gt;</span>
+  <span class="c-tag">&lt;servlet-mapping&gt;</span>
+    <span class="c-tag">&lt;servlet-name&gt;</span>dispatcher<span class="c-tag">&lt;/servlet-name&gt;</span>
+    <span class="c-tag">&lt;url-pattern&gt;</span>/<span class="c-tag">&lt;/url-pattern&gt;</span>
+  <span class="c-tag">&lt;/servlet-mapping&gt;</span>
+<span class="c-tag">&lt;/web-app&gt;</span></div>
+          <div class="ba-label before" style="margin-top:16px">// spring-mvc.xml — more config</div>
+          <div class="code-block"><span class="c-tag">&lt;beans&gt;</span>
+  <span class="c-tag">&lt;context:component-scan</span> <span class="c-attr">base-package</span>=<span class="c-val">"com.shop"</span> <span class="c-tag">/&gt;</span>
+  <span class="c-tag">&lt;mvc:annotation-driven /&gt;</span>
+  <span class="c-tag">&lt;bean</span> <span class="c-attr">class</span>=<span class="c-val">"InternalResourceViewResolver"</span><span class="c-tag">&gt;</span>
+    <span class="c-tag">&lt;property</span> <span class="c-attr">name</span>=<span class="c-val">"prefix"</span> <span class="c-attr">value</span>=<span class="c-val">"/WEB-INF/views/"</span> <span class="c-tag">/&gt;</span>
+    <span class="c-tag">&lt;property</span> <span class="c-attr">name</span>=<span class="c-val">"suffix"</span> <span class="c-attr">value</span>=<span class="c-val">".jsp"</span> <span class="c-tag">/&gt;</span>
+  <span class="c-tag">&lt;/bean&gt;</span>
+<span class="c-tag">&lt;/beans&gt;</span></div>
+          <p class="ba-note">And this is before you've written a single controller. You still need to configure a DataSource, TransactionManager, EntityManagerFactory…</p>
+        </div>
+
+        <div class="ba-panel" id="panel-after">
+          <div class="ba-label after">// The entire app — one file, zero XML</div>
+          <div class="code-block"><span class="c-ann">@SpringBootApplication</span>
+<span class="c-kw">public class</span> <span class="c-type">MyShopApplication</span> {
+    <span class="c-kw">public static void</span> <span class="c-method">main</span>(String[] args) {
+        SpringApplication.<span class="c-method">run</span>(MyShopApplication.<span class="c-kw">class</span>, args);
+    }
+}
+
+<span class="c-comment">// That's it. Your app is running on port 8080.</span></div>
+          <div class="ba-label after" style="margin-top:16px">// Add an endpoint</div>
+          <div class="code-block"><span class="c-ann">@RestController</span>
+<span class="c-kw">public class</span> <span class="c-type">HelloController</span> {
+
+    <span class="c-ann">@GetMapping</span>(<span class="c-str">"/hello"</span>)
+    <span class="c-kw">public</span> String <span class="c-method">hello</span>() {
+        <span class="c-kw">return</span> <span class="c-str">"Hello, World!"</span>;
+    }
+}</div>
+          <p class="ba-note">No XML. No WAR files. No application server. Hit <code style="color:var(--green-text);font-family:'JetBrains Mono',monospace">localhost:8080/hello</code> and you're done.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-amber">
+      <span class="callout-icon">⚡</span>
+      <div class="callout-text">The old approach wasn't <em>wrong</em> — it was just tedious. Every project copied the same boilerplate. Spring Boot packages all of that into <strong>sensible defaults you can override when needed</strong>.</div>
+    </div>
+  </div>
+
+  <!-- section 2: three core ideas -->
+  <div class="section">
+    <div class="section-label">How it works</div>
+    <h2>Three ideas behind Spring Boot</h2>
+    <p>Spring Boot isn't magic — it's three simple ideas applied consistently. Click each to understand what's really happening.</p>
+
+    <div class="ideas-grid">
+      <div class="idea-card" data-idea="autoconfig" onclick="selectIdea(this)">
+        <div class="idea-icon">🤖</div>
+        <div class="idea-name">AUTO-CONFIG</div>
+        <div class="idea-short">Configures beans based on what's on the classpath</div>
+      </div>
+      <div class="idea-card" data-idea="starters" onclick="selectIdea(this)">
+        <div class="idea-icon">📦</div>
+        <div class="idea-name">STARTERS</div>
+        <div class="idea-short">Curated dependency bundles — one line gets everything</div>
+      </div>
+      <div class="idea-card" data-idea="embedded" onclick="selectIdea(this)">
+        <div class="idea-icon">🚀</div>
+        <div class="idea-name">EMBEDDED SERVER</div>
+        <div class="idea-short">Tomcat is inside your JAR — no separate install</div>
+      </div>
+    </div>
+
+    <div class="idea-detail" id="idea-detail">
+      <em style="color:var(--faint)">← Click a card above to understand the idea behind it.</em>
+    </div>
+  </div>
+
+  <!-- section 3: spring vs spring boot -->
+  <div class="section">
+    <div class="section-label">Side by side</div>
+    <h2>Spring Framework vs Spring Boot</h2>
+    <p>Spring Boot doesn't replace Spring — it sits <em>on top of it</em>. Here's the honest comparison.</p>
+
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>What</th>
+          <th>Spring Framework</th>
+          <th>Spring Boot</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Configuration</td>
+          <td><span class="bad">Manual — XML or Java @Bean methods</span></td>
+          <td><span class="good">Auto-configured from classpath</span></td>
+        </tr>
+        <tr>
+          <td>Server setup</td>
+          <td><span class="bad">Deploy WAR to external Tomcat/Jetty</span></td>
+          <td><span class="good">Embedded Tomcat in the JAR — just run it</span></td>
+        </tr>
+        <tr>
+          <td>Dependencies</td>
+          <td><span class="bad">Pick and version every library yourself</span></td>
+          <td><span class="good">Starters bundle compatible versions for you</span></td>
+        </tr>
+        <tr>
+          <td>Time to first endpoint</td>
+          <td><span class="bad">30–60 minutes of setup</span></td>
+          <td><span class="good">Under 5 minutes</span></td>
+        </tr>
+        <tr>
+          <td>Flexibility</td>
+          <td>Full control over everything</td>
+          <td>Same control — defaults are just overridable</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-blue">
+      <span class="callout-icon">💡</span>
+      <div class="callout-text"><strong>Spring Boot doesn't hide anything.</strong> Everything it auto-configures, you can override. As you learn more, you'll peel back the layers — but you don't have to on day one.</div>
+    </div>
+  </div>
+
+  <!-- section 4: where it fits -->
+  <div class="section">
+    <div class="section-label">The bigger picture</div>
+    <h2>Where Spring Boot sits in your stack</h2>
+    <p>Click each layer to understand its role.</p>
+
+    <div class="stack-wrap">
+      <div class="stack-layers">
+        <div class="stack-layer sl-your-code" data-layer="your-code" onclick="selectLayer(this)">
+          <span class="sl-label">Your Code</span>
+          <span class="sl-note">Controllers, Services, Repositories</span>
+        </div>
+        <div class="stack-layer sl-sb" data-layer="spring-boot" onclick="selectLayer(this)">
+          <span class="sl-label">Spring Boot</span>
+          <span class="sl-note">Auto-config, Starters, Embedded Server</span>
+        </div>
+        <div class="stack-layer sl-spring" data-layer="spring" onclick="selectLayer(this)">
+          <span class="sl-label">Spring Framework</span>
+          <span class="sl-note">IoC Container, DI, AOP, MVC, Data</span>
+        </div>
+        <div class="stack-layer sl-jvm" data-layer="jvm" onclick="selectLayer(this)">
+          <span class="sl-label">JVM</span>
+          <span class="sl-note">Java Virtual Machine — runs everywhere</span>
+        </div>
+      </div>
+      <div class="stack-desc" id="stack-desc">Click a layer above to see what it does.</div>
+    </div>
+  </div>
+
+  <!-- callout: what's next -->
+  <div class="callout callout-green">
+    <span class="callout-icon">✅</span>
+    <div class="callout-text"><strong>You now have the mental model.</strong> Spring Boot is Spring with sensible defaults, embedded server, and curated dependencies. Nothing is hidden — it's just pre-decided for you. In the next step you'll install everything you need and see it run.</div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta">
+    <div class="cta-left">
+      <h3>Ready for Step 2?</h3>
+      <p>Setting up Java, Maven, and your IDE — ready in under 10 minutes.</p>
+    </div>
+    <a class="cta-btn" href="part-2.html">Step 2 — Set Up Your Environment →</a>
+  </div>
+
+</div>
+
+<script>
+// Before / After toggle
+function showPanel(which) {
+  document.getElementById('panel-before').classList.toggle('active', which === 'before');
+  document.getElementById('panel-after').classList.toggle('active', which === 'after');
+  const tabBefore = document.getElementById('tab-before');
+  const tabAfter  = document.getElementById('tab-after');
+  tabBefore.className = 'ba-tab' + (which === 'before' ? ' active-before' : '');
+  tabAfter.className  = 'ba-tab' + (which === 'after'  ? ' active-after'  : '');
+}
+
+// Core ideas
+const ideaDetails = {
+  autoconfig: {
+    title: 'AUTO-CONFIGURATION',
+    body: '<strong>If a library is on your classpath, Spring Boot configures it for you.</strong> Add the JPA starter and it detects your database driver, creates a DataSource, and wires up an EntityManager — without a single line of config from you. Under the hood it\'s just <code style="color:var(--green-text);font-family:\'JetBrains Mono\',monospace">@ConditionalOnClass</code> checks. You can always override any bean it creates.',
+  },
+  starters: {
+    title: 'STARTERS',
+    body: 'A starter is a single Maven dependency that pulls in everything you need for a feature — and all at <strong>compatible, tested versions</strong>. <code style="color:var(--green-text);font-family:\'JetBrains Mono\',monospace">spring-boot-starter-web</code> gives you Spring MVC, Jackson (for JSON), and embedded Tomcat. Before starters, you had to find and align 8–10 individual dependencies yourself.',
+  },
+  embedded: {
+    title: 'EMBEDDED SERVER',
+    body: 'Traditional Java web apps required a <strong>separate Tomcat install</strong> — you\'d deploy a WAR file into it. Spring Boot packages Tomcat <em>inside your JAR</em>. You <code style="color:var(--green-text);font-family:\'JetBrains Mono\',monospace">java -jar myapp.jar</code> and you\'re live. This is what makes containerisation and cloud deploys so simple — it\'s just a process, not a server + deployment dance.',
+  },
+};
+
+function selectIdea(card) {
+  document.querySelectorAll('.idea-card').forEach(c => c.classList.remove('active'));
+  card.classList.add('active');
+  const d = ideaDetails[card.dataset.idea];
+  document.getElementById('idea-detail').innerHTML =
+    `<div class="detail-title">${d.title}</div>${d.body}`;
+}
+
+// Stack layers
+const stackDetails = {
+  'your-code': '<strong>Your Code</strong> — Controllers handle HTTP, Services hold business logic, Repositories talk to the database. This is the only layer you write. Spring Boot takes care of everything below.',
+  'spring-boot': '<strong>Spring Boot</strong> — Auto-configures all the plumbing based on what\'s on the classpath. Provides starter dependencies, embeds Tomcat, and gives you production-ready features (health checks, metrics) out of the box.',
+  'spring': '<strong>Spring Framework</strong> — The foundation. Provides the IoC container (manages your beans), dependency injection, Spring MVC (web layer), Spring Data (database layer), and AOP (cross-cutting concerns like transactions).',
+  'jvm': '<strong>JVM (Java Virtual Machine)</strong> — Compiles your code to bytecode and runs it on any OS. This is why Java\'s motto is "write once, run anywhere." Spring Boot apps run on any machine with a JRE installed.',
+};
+
+function selectLayer(el) {
+  document.querySelectorAll('.stack-layer').forEach(l => l.classList.remove('highlight'));
+  el.classList.add('highlight');
+  document.getElementById('stack-desc').innerHTML = stackDetails[el.dataset.layer] || '';
+}
+</script>
+</body>
+</html>

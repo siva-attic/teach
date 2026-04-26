@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Step 5 — Dependencies and the POM · Spring Boot</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Fraunces:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f1117;
+    --surface: #161b27;
+    --surface2: #1e2535;
+    --border: #2a3147;
+    --text: #e8eaf0;
+    --muted: #7b8499;
+    --faint: #3d4560;
+    --green: #4ade80;
+    --green-dim: #1a3d2b;
+    --green-text: #86efac;
+    --amber: #fbbf24;
+    --amber-dim: #3d2e08;
+    --blue: #60a5fa;
+    --blue-dim: #0f2040;
+    --coral: #f87171;
+    --coral-dim: #3d1212;
+    --purple: #a78bfa;
+    --purple-dim: #1e1440;
+    --teal: #2dd4bf;
+    --teal-dim: #0d2e2a;
+  }
+
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Fraunces', Georgia, serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.75; }
+
+  .topbar { display: flex; align-items: center; gap: 10px; padding: 14px 40px; border-bottom: 1px solid var(--border); background: var(--surface); position: sticky; top: 0; z-index: 100; }
+  .back-link { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); text-decoration: none; letter-spacing: .05em; display: flex; align-items: center; gap: 5px; transition: color .15s; }
+  .back-link:hover { color: var(--green); }
+  .topbar-sep { color: var(--faint); font-size: 13px; }
+  .step-badge { font-family: 'JetBrains Mono', monospace; font-size: 11px; background: var(--green-dim); color: var(--green); border: 1px solid var(--green); border-radius: 4px; padding: 2px 8px; letter-spacing: .05em; }
+  .topbar-title { font-family: 'Fraunces', serif; font-size: 15px; font-weight: 300; color: var(--muted); }
+  .topbar-title strong { color: var(--text); font-weight: 400; }
+
+  .page { max-width: 860px; margin: 0 auto; padding: 60px 40px 120px; }
+
+  .hero { margin-bottom: 60px; }
+  .hero-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--green); letter-spacing: .1em; margin-bottom: 14px; }
+  .hero h1 { font-size: clamp(32px, 5vw, 52px); font-weight: 300; line-height: 1.15; letter-spacing: -.02em; margin-bottom: 20px; }
+  .hero h1 em { font-style: italic; color: var(--muted); }
+  .hero-lead { font-size: 18px; font-weight: 300; color: var(--muted); max-width: 560px; line-height: 1.8; }
+  .hero-lead strong { color: var(--text); font-weight: 400; }
+
+  .section { margin-bottom: 64px; }
+  .section-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: .12em; text-transform: uppercase; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  h2 { font-size: 24px; font-weight: 400; margin-bottom: 16px; letter-spacing: -.01em; }
+  p { color: var(--muted); margin-bottom: 14px; font-size: 16px; }
+  p strong { color: var(--text); font-weight: 400; }
+
+  /* ── pom anatomy ── */
+  .pom-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 16px; }
+  .pom-topbar { padding: 12px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; } .dot-y { background: #febc2e; } .dot-g { background: #28c840; }
+  .pom-topbar span { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); margin-left: 8px; }
+  .pom-body { display: flex; }
+  .pom-left { flex: 1; min-width: 0; padding: 20px 0; overflow-x: auto; border-right: 1px solid var(--border); }
+  .pom-right { width: 272px; flex-shrink: 0; padding: 20px; }
+  .pom-detail-inner { background: var(--surface2); border-radius: 8px; padding: 16px; min-height: 200px; }
+  .pom-detail-inner .pd-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .08em; margin-bottom: 8px; }
+  .pom-detail-inner .pd-title { font-size: 15px; font-weight: 400; color: var(--text); margin-bottom: 10px; }
+  .pom-detail-inner .pd-body { font-size: 13px; color: var(--muted); line-height: 1.7; }
+  .pom-detail-inner .pd-body strong { color: var(--text); font-weight: 400; }
+
+  /* pom code sections */
+  .pom-section {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    line-height: 1.85;
+    padding: 8px 20px;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: background .12s, border-color .15s;
+    white-space: pre;
+  }
+  .pom-section:hover { background: var(--surface2); }
+  .pom-section.active { background: var(--surface2); }
+
+  .pom-section.s-parent.active  { border-left-color: var(--blue); }
+  .pom-section.s-coords.active  { border-left-color: var(--green); }
+  .pom-section.s-props.active   { border-left-color: var(--amber); }
+  .pom-section.s-deps.active    { border-left-color: var(--coral); }
+  .pom-section.s-build.active   { border-left-color: var(--purple); }
+
+  .pom-static { font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.85; padding: 4px 20px; white-space: pre; color: var(--faint); }
+
+  .ct { color: var(--blue); }        /* xml tag */
+  .ca { color: var(--purple); }      /* xml attr */
+  .cv { color: var(--amber); }       /* xml value */
+  .cc { color: var(--faint); font-style: italic; } /* comment */
+  .cg { color: var(--green-text); }  /* java/content */
+  .cm { color: var(--muted); }       /* muted content */
+
+  /* ── parent BOM ── */
+  .bom-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; margin-bottom: 16px; }
+  .bom-flow { display: flex; align-items: stretch; gap: 0; margin-bottom: 20px; }
+  .bom-box {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 16px;
+    text-align: center;
+  }
+  .bom-icon { font-size: 22px; margin-bottom: 8px; }
+  .bom-name { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; margin-bottom: 6px; }
+  .bom-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .bom-arrow { display: flex; align-items: center; padding: 0 10px; color: var(--faint); font-size: 18px; }
+  .version-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .version-table th { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .08em; padding: 8px 14px; text-align: left; background: var(--surface2); border: 1px solid var(--border); color: var(--muted); }
+  .version-table td { padding: 10px 14px; border: 1px solid var(--border); color: var(--muted); background: var(--surface); vertical-align: middle; }
+  .version-table td:first-child { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--green-text); }
+  .version-table td .v-managed { color: var(--green); font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+  .version-table td .v-manual  { color: var(--coral);  font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+  /* ── scope cards ── */
+  .scope-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px; }
+  .scope-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 18px;
+    cursor: pointer;
+    transition: border-color .15s, transform .12s;
+  }
+  .scope-card:hover { transform: translateY(-2px); }
+  .scope-card.active-compile  { border-color: var(--green);  background: var(--green-dim); }
+  .scope-card.active-test     { border-color: var(--blue);   background: var(--blue-dim); }
+  .scope-card.active-runtime  { border-color: var(--amber);  background: var(--amber-dim); }
+  .scope-card.active-provided { border-color: var(--purple); background: var(--purple-dim); }
+  .scope-tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600;
+    padding: 3px 9px; border-radius: 4px; border: 1px solid;
+    display: inline-block; margin-bottom: 12px;
+  }
+  .tag-compile  { color: var(--green);  border-color: var(--green);  background: var(--green-dim); }
+  .tag-test     { color: var(--blue);   border-color: var(--blue);   background: var(--blue-dim); }
+  .tag-runtime  { color: var(--amber);  border-color: var(--amber);  background: var(--amber-dim); }
+  .tag-provided { color: var(--purple); border-color: var(--purple); background: var(--purple-dim); }
+  .scope-title { font-size: 15px; font-weight: 400; color: var(--text); margin-bottom: 6px; }
+  .scope-sub { font-size: 13px; color: var(--muted); line-height: 1.6; }
+  .scope-detail {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 22px;
+    min-height: 72px;
+    margin-bottom: 16px;
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.75;
+    font-family: 'Fraunces', serif;
+  }
+  .scope-detail strong { color: var(--text); font-weight: 400; }
+  .scope-detail .sd-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .08em; margin-bottom: 8px; }
+
+  /* ── workflow stepper ── */
+  .workflow-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 16px; }
+  .workflow-steps { display: flex; flex-direction: column; }
+  .workflow-step {
+    display: flex; gap: 0; cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    transition: background .12s;
+  }
+  .workflow-step:last-child { border-bottom: none; }
+  .workflow-step:hover { background: var(--surface2); }
+  .workflow-step.open { background: var(--surface2); }
+  .wf-num {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600;
+    color: var(--faint); min-width: 52px; display: flex; align-items: flex-start;
+    justify-content: center; padding: 18px 0 0;
+    transition: color .15s;
+  }
+  .workflow-step.open .wf-num { color: var(--green); }
+  .wf-content { flex: 1; padding: 16px 20px 16px 0; }
+  .wf-title { font-size: 15px; font-weight: 400; color: var(--text); margin-bottom: 2px; display: flex; align-items: center; gap: 10px; }
+  .wf-title .wf-chevron { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--faint); margin-left: auto; transition: transform .2s; }
+  .workflow-step.open .wf-chevron { transform: rotate(90deg); color: var(--green); }
+  .wf-body { display: none; margin-top: 12px; font-size: 14px; color: var(--muted); line-height: 1.7; }
+  .workflow-step.open .wf-body { display: block; }
+  .wf-body strong { color: var(--text); font-weight: 400; }
+
+  /* ── code block ── */
+  .code-block {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.9;
+    overflow-x: auto;
+    margin-top: 10px;
+    margin-bottom: 4px;
+  }
+  .c-tag { color: var(--blue); }
+  .c-val { color: var(--amber); }
+  .c-green { color: var(--green-text); }
+  .c-comment { color: var(--faint); font-style: italic; }
+  .c-ann { color: var(--amber); }
+  .c-kw { color: var(--coral); }
+  .c-type { color: var(--blue); }
+  .c-str { color: var(--green-text); }
+
+  /* ── callout ── */
+  .callout { border-radius: 10px; padding: 18px 22px; display: flex; gap: 14px; align-items: flex-start; margin-bottom: 16px; }
+  .callout-green { background: var(--green-dim); border: 1px solid var(--green); }
+  .callout-amber { background: var(--amber-dim); border: 1px solid var(--amber); }
+  .callout-blue  { background: var(--blue-dim);  border: 1px solid var(--blue); }
+  .callout-teal  { background: var(--teal-dim);  border: 1px solid var(--teal); }
+  .callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 2px; }
+  .callout-text { font-size: 15px; line-height: 1.7; font-family: 'Fraunces', serif; }
+  .callout-green .callout-text { color: var(--green-text); }
+  .callout-amber .callout-text { color: var(--amber); }
+  .callout-blue  .callout-text { color: var(--blue); }
+  .callout-teal  .callout-text { color: var(--teal); }
+  .callout-text strong { font-weight: 600; }
+
+  /* ── CTA ── */
+  .cta { margin-top: 64px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 32px 36px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+  .cta-left h3 { font-size: 20px; font-weight: 300; margin-bottom: 6px; }
+  .cta-left p  { font-size: 14px; color: var(--muted); margin: 0; }
+  .cta-btn { background: var(--green); color: #0a1f14; border: none; border-radius: 8px; padding: 12px 24px; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; letter-spacing: .03em; transition: opacity .15s; text-decoration: none; display: inline-block; }
+  .cta-btn:hover { opacity: .85; }
+
+  .progress-bar { width: 100%; height: 3px; background: var(--surface2); margin-bottom: 40px; border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; width: 50%; background: linear-gradient(90deg, var(--green) 0%, var(--teal) 100%); border-radius: 2px; }
+
+  @media (max-width: 640px) {
+    .page { padding: 32px 20px 80px; }
+    .topbar { padding: 12px 20px; }
+    .pom-body { flex-direction: column; }
+    .pom-right { width: 100%; border-top: 1px solid var(--border); }
+    .bom-flow { flex-direction: column; }
+    .bom-arrow { transform: rotate(90deg); padding: 6px 0; justify-content: center; }
+    .scope-grid { grid-template-columns: 1fr; }
+    .cta { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back-link" href="index.html">← All Parts</a>
+  <span class="topbar-sep">/</span>
+  <span class="step-badge">STEP 5 / 10</span>
+  <span class="topbar-title">Spring Boot &nbsp;·&nbsp; <strong>Dependencies and the POM</strong></span>
+</div>
+
+<div class="page">
+
+  <div class="progress-bar"><div class="progress-fill"></div></div>
+
+  <div class="hero">
+    <div class="hero-eyebrow">STEP 5 — MAVEN &amp; DEPENDENCIES</div>
+    <h1>Your project's<br /><em>shopping list.</em></h1>
+    <p class="hero-lead">The <strong>pom.xml</strong> is the one file Maven reads to understand everything about your project — what libraries to download, which Java version to use, how to build the JAR. Learn it once, and dependency management stops being painful.</p>
+  </div>
+
+  <!-- section 1: pom.xml anatomy -->
+  <div class="section">
+    <div class="section-label">The file itself</div>
+    <h2>pom.xml — click any section to understand it</h2>
+    <p>Every Spring Boot project has exactly one <code style="font-family:'JetBrains Mono',monospace;color:var(--amber)">pom.xml</code> at its root. It has five logical sections. Click each highlighted block to see what it does.</p>
+
+    <div class="pom-wrap">
+      <div class="pom-topbar">
+        <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+        <span>pom.xml</span>
+      </div>
+      <div class="pom-body">
+        <div class="pom-left">
+<div class="pom-static"><span class="ct">&lt;?xml version=<span style="color:var(--amber)">"1.0"</span> encoding=<span style="color:var(--amber)">"UTF-8"</span>?&gt;</span>
+<span class="ct">&lt;project&gt;</span>
+  <span class="cm">&lt;modelVersion&gt;</span>4.0.0<span class="cm">&lt;/modelVersion&gt;</span></div>
+
+<div class="pom-section s-parent" data-section="parent" onclick="selectPom(this)"><span class="cc">  &lt;!-- ① parent --&gt;</span>
+  <span class="ct">&lt;parent&gt;</span>
+    <span class="ct">&lt;groupId&gt;</span><span class="cm">org.springframework.boot</span><span class="ct">&lt;/groupId&gt;</span>
+    <span class="ct">&lt;artifactId&gt;</span><span class="cg">spring-boot-starter-parent</span><span class="ct">&lt;/artifactId&gt;</span>
+    <span class="ct">&lt;version&gt;</span><span class="cv">3.3.0</span><span class="ct">&lt;/version&gt;</span>
+  <span class="ct">&lt;/parent&gt;</span></div>
+
+<div class="pom-section s-coords" data-section="coords" onclick="selectPom(this)"><span class="cc">  &lt;!-- ② your project coordinates --&gt;</span>
+  <span class="ct">&lt;groupId&gt;</span><span class="cg">com.shop</span><span class="ct">&lt;/groupId&gt;</span>
+  <span class="ct">&lt;artifactId&gt;</span><span class="cg">my-shop</span><span class="ct">&lt;/artifactId&gt;</span>
+  <span class="ct">&lt;version&gt;</span><span class="cv">0.0.1-SNAPSHOT</span><span class="ct">&lt;/version&gt;</span>
+  <span class="ct">&lt;packaging&gt;</span><span class="cm">jar</span><span class="ct">&lt;/packaging&gt;</span></div>
+
+<div class="pom-section s-props" data-section="props" onclick="selectPom(this)"><span class="cc">  &lt;!-- ③ properties --&gt;</span>
+  <span class="ct">&lt;properties&gt;</span>
+    <span class="ct">&lt;java.version&gt;</span><span class="cv">21</span><span class="ct">&lt;/java.version&gt;</span>
+  <span class="ct">&lt;/properties&gt;</span></div>
+
+<div class="pom-section s-deps" data-section="deps" onclick="selectPom(this)"><span class="cc">  &lt;!-- ④ dependencies --&gt;</span>
+  <span class="ct">&lt;dependencies&gt;</span>
+    <span class="ct">&lt;dependency&gt;</span>
+      <span class="ct">&lt;groupId&gt;</span><span class="cm">org.springframework.boot</span><span class="ct">&lt;/groupId&gt;</span>
+      <span class="ct">&lt;artifactId&gt;</span><span class="cg">spring-boot-starter-web</span><span class="ct">&lt;/artifactId&gt;</span>
+    <span class="ct">&lt;/dependency&gt;</span>
+    <span class="ct">&lt;dependency&gt;</span>
+      <span class="ct">&lt;groupId&gt;</span><span class="cm">org.springframework.boot</span><span class="ct">&lt;/groupId&gt;</span>
+      <span class="ct">&lt;artifactId&gt;</span><span class="cg">spring-boot-starter-test</span><span class="ct">&lt;/artifactId&gt;</span>
+      <span class="ct">&lt;scope&gt;</span><span class="cv">test</span><span class="ct">&lt;/scope&gt;</span>
+    <span class="ct">&lt;/dependency&gt;</span>
+  <span class="ct">&lt;/dependencies&gt;</span></div>
+
+<div class="pom-section s-build" data-section="build" onclick="selectPom(this)"><span class="cc">  &lt;!-- ⑤ build plugin --&gt;</span>
+  <span class="ct">&lt;build&gt;</span>
+    <span class="ct">&lt;plugins&gt;</span>
+      <span class="ct">&lt;plugin&gt;</span>
+        <span class="ct">&lt;groupId&gt;</span><span class="cm">org.springframework.boot</span><span class="ct">&lt;/groupId&gt;</span>
+        <span class="ct">&lt;artifactId&gt;</span><span class="cg">spring-boot-maven-plugin</span><span class="ct">&lt;/artifactId&gt;</span>
+      <span class="ct">&lt;/plugin&gt;</span>
+    <span class="ct">&lt;/plugins&gt;</span>
+  <span class="ct">&lt;/build&gt;</span></div>
+
+<div class="pom-static"><span class="ct">&lt;/project&gt;</span></div>
+        </div>
+        <div class="pom-right">
+          <div class="pom-detail-inner" id="pom-detail">
+            <div class="pd-body" style="color:var(--faint);font-style:italic">← Click any highlighted block to understand that section.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- section 2: parent POM / version management -->
+  <div class="section">
+    <div class="section-label">Version management</div>
+    <h2>The parent POM — why you never version your starters</h2>
+    <p>The single most important line in your pom.xml is the <code style="font-family:'JetBrains Mono',monospace;color:var(--amber)">&lt;parent&gt;</code>. It inherits from <strong>spring-boot-starter-parent</strong>, which itself inherits from a BOM — a Bill of Materials — that defines the exact version of every library Spring Boot has tested against.</p>
+
+    <div class="bom-wrap">
+      <div class="bom-flow">
+        <div class="bom-box">
+          <div class="bom-icon">📄</div>
+          <div class="bom-name" style="color:var(--green)">your pom.xml</div>
+          <div class="bom-desc">Declares starters with no version numbers</div>
+        </div>
+        <div class="bom-arrow">→</div>
+        <div class="bom-box">
+          <div class="bom-icon">🧩</div>
+          <div class="bom-name" style="color:var(--blue)">spring-boot-starter-parent</div>
+          <div class="bom-desc">Inherits from the BOM, sets compiler settings, plugin versions</div>
+        </div>
+        <div class="bom-arrow">→</div>
+        <div class="bom-box">
+          <div class="bom-icon">📋</div>
+          <div class="bom-name" style="color:var(--amber)">spring-boot-dependencies (BOM)</div>
+          <div class="bom-desc">Declares exact versions for ~300 libraries, all compatibility-tested</div>
+        </div>
+      </div>
+
+      <table class="version-table">
+        <thead>
+          <tr>
+            <th>Dependency</th>
+            <th>Without parent — you guess</th>
+            <th>With parent — managed for you</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>spring-boot-starter-web</td>
+            <td><span class="v-manual">&lt;version&gt;3.3.0&lt;/version&gt;</span></td>
+            <td><span class="v-managed">no &lt;version&gt; needed ✓</span></td>
+          </tr>
+          <tr>
+            <td>jackson-databind</td>
+            <td><span class="v-manual">&lt;version&gt;2.17.1&lt;/version&gt;</span></td>
+            <td><span class="v-managed">no &lt;version&gt; needed ✓</span></td>
+          </tr>
+          <tr>
+            <td>hibernate-core</td>
+            <td><span class="v-manual">&lt;version&gt;6.5.2.Final&lt;/version&gt;</span></td>
+            <td><span class="v-managed">no &lt;version&gt; needed ✓</span></td>
+          </tr>
+          <tr>
+            <td>junit-jupiter</td>
+            <td><span class="v-manual">&lt;version&gt;5.10.3&lt;/version&gt;</span></td>
+            <td><span class="v-managed">no &lt;version&gt; needed ✓</span></td>
+          </tr>
+          <tr>
+            <td>a non-Spring library (e.g. MapStruct)</td>
+            <td colspan="1"><span style="color:var(--muted)">not in BOM</span></td>
+            <td><span class="v-manual">you must specify &lt;version&gt;</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-amber">
+      <span class="callout-icon">⚠️</span>
+      <div class="callout-text"><strong>Only libraries in the Spring Boot BOM are version-managed.</strong> For anything outside the BOM — like MapStruct, Lombok, or third-party SDKs — you still need to specify the version yourself. Check <strong>start.spring.io/actuator/info</strong> to see the full list of what's in the current BOM.</div>
+    </div>
+  </div>
+
+  <!-- section 3: dependency scopes -->
+  <div class="section">
+    <div class="section-label">Dependency scopes</div>
+    <h2>When is each dependency available?</h2>
+    <p>Every dependency has a <strong>scope</strong> — it controls <em>when</em> the library is on the classpath. Getting this wrong either bloats your JAR or causes a runtime error. Click each scope to see when to use it.</p>
+
+    <div class="scope-grid">
+      <div class="scope-card" data-scope="compile" onclick="selectScope(this)">
+        <div class="scope-tag tag-compile">compile</div>
+        <div class="scope-title">Compile + runtime</div>
+        <div class="scope-sub">The default. Available everywhere — compilation, tests, and the final JAR.</div>
+      </div>
+      <div class="scope-card" data-scope="test" onclick="selectScope(this)">
+        <div class="scope-tag tag-test">test</div>
+        <div class="scope-title">Tests only</div>
+        <div class="scope-sub">Only on the classpath when running tests. Not included in the final JAR.</div>
+      </div>
+      <div class="scope-card" data-scope="runtime" onclick="selectScope(this)">
+        <div class="scope-tag tag-runtime">runtime</div>
+        <div class="scope-title">Runtime only</div>
+        <div class="scope-sub">Not needed to compile, but required when the app runs. Classic for JDBC drivers.</div>
+      </div>
+      <div class="scope-card" data-scope="provided" onclick="selectScope(this)">
+        <div class="scope-tag tag-provided">provided</div>
+        <div class="scope-title">Compile only</div>
+        <div class="scope-sub">Needed to compile, but the runtime environment provides it. Not in the JAR.</div>
+      </div>
+    </div>
+
+    <div class="scope-detail" id="scope-detail">
+      <em style="color:var(--faint)">← Click a scope card above to see when to use it and real examples.</em>
+    </div>
+  </div>
+
+  <!-- section 4: the workflow -->
+  <div class="section">
+    <div class="section-label">Adding a dependency</div>
+    <h2>The five-step workflow — every time</h2>
+    <p>You'll follow this exact process every time you need a new library. Click each step to expand it.</p>
+
+    <div class="workflow-wrap">
+      <div class="workflow-steps" id="workflow-steps">
+
+        <div class="workflow-step open" data-step="0" onclick="toggleStep(this)">
+          <div class="wf-num">01</div>
+          <div class="wf-content">
+            <div class="wf-title">Decide what you need <span class="wf-chevron">›</span></div>
+            <div class="wf-body">
+              <strong>Be specific.</strong> "I need to send emails" → Jakarta Mail. "I need to validate JSON" → it's already included via Hibernate Validator in the web starter. "I need to map between objects" → MapStruct or ModelMapper. Knowing the problem precisely makes the search fast.
+            </div>
+          </div>
+        </div>
+
+        <div class="workflow-step" data-step="1" onclick="toggleStep(this)">
+          <div class="wf-num">02</div>
+          <div class="wf-content">
+            <div class="wf-title">Find it — two reliable sources <span class="wf-chevron">›</span></div>
+            <div class="wf-body">
+              <strong>For Spring-specific features:</strong> go to <code style="font-family:'JetBrains Mono',monospace;color:var(--green-text)">start.spring.io</code>, search the dependency, and copy the Maven coordinates from the metadata panel. It shows the right starter name and version is handled by the parent.<br /><br />
+              <strong>For everything else:</strong> search <code style="font-family:'JetBrains Mono',monospace;color:var(--green-text)">mvnrepository.com</code>, find your library, pick the latest stable version, and copy the <code>&lt;dependency&gt;</code> snippet.
+            </div>
+          </div>
+        </div>
+
+        <div class="workflow-step" data-step="2" onclick="toggleStep(this)">
+          <div class="wf-num">03</div>
+          <div class="wf-content">
+            <div class="wf-title">Understand the three coordinates — GAV <span class="wf-chevron">›</span></div>
+            <div class="wf-body">
+              Every Maven dependency is identified by three coordinates called <strong>GAV</strong>.
+              <div class="code-block">
+<span class="c-tag">&lt;dependency&gt;</span>
+  <span class="c-tag">&lt;groupId&gt;</span><span style="color:var(--blue)">org.springframework.boot</span><span class="c-tag">&lt;/groupId&gt;</span>    <span class="c-comment">&lt;!-- G: who made it (like a package name) --&gt;</span>
+  <span class="c-tag">&lt;artifactId&gt;</span><span class="c-green">spring-boot-starter-web</span><span class="c-tag">&lt;/artifactId&gt;</span> <span class="c-comment">&lt;!-- A: the specific library --&gt;</span>
+  <span class="c-tag">&lt;version&gt;</span><span class="c-val">3.3.0</span><span class="c-tag">&lt;/version&gt;</span>                       <span class="c-comment">&lt;!-- V: omit if managed by parent --&gt;</span>
+<span class="c-tag">&lt;/dependency&gt;</span></div>
+              Think of it like a file path: <code style="font-family:'JetBrains Mono',monospace;color:var(--muted)">groupId/artifactId/version</code>. Maven uses this to locate the exact JAR in Maven Central.
+            </div>
+          </div>
+        </div>
+
+        <div class="workflow-step" data-step="3" onclick="toggleStep(this)">
+          <div class="wf-num">04</div>
+          <div class="wf-content">
+            <div class="wf-title">Add it to the &lt;dependencies&gt; block <span class="wf-chevron">›</span></div>
+            <div class="wf-body">
+              Paste the snippet inside the <code style="font-family:'JetBrains Mono',monospace;color:var(--blue)">&lt;dependencies&gt;</code> block. Set the correct scope if needed (default is <code>compile</code>). Save the file.
+              <div class="code-block">
+<span class="c-comment">&lt;!-- Example: adding Spring Data JPA + H2 for Step 8 --&gt;</span>
+<span class="c-tag">&lt;dependency&gt;</span>
+  <span class="c-tag">&lt;groupId&gt;</span>org.springframework.boot<span class="c-tag">&lt;/groupId&gt;</span>
+  <span class="c-tag">&lt;artifactId&gt;</span><span class="c-green">spring-boot-starter-data-jpa</span><span class="c-tag">&lt;/artifactId&gt;</span>
+<span class="c-tag">&lt;/dependency&gt;</span>
+<span class="c-tag">&lt;dependency&gt;</span>
+  <span class="c-tag">&lt;groupId&gt;</span>com.h2database<span class="c-tag">&lt;/groupId&gt;</span>
+  <span class="c-tag">&lt;artifactId&gt;</span><span class="c-green">h2</span><span class="c-tag">&lt;/artifactId&gt;</span>
+  <span class="c-tag">&lt;scope&gt;</span><span class="c-val">runtime</span><span class="c-tag">&lt;/scope&gt;</span>  <span class="c-comment">&lt;!-- runtime: driver not needed at compile time --&gt;</span>
+<span class="c-tag">&lt;/dependency&gt;</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="workflow-step" data-step="4" onclick="toggleStep(this)">
+          <div class="wf-num">05</div>
+          <div class="wf-content">
+            <div class="wf-title">Maven downloads it — use it in your code <span class="wf-chevron">›</span></div>
+            <div class="wf-body">
+              IntelliJ detects the pom.xml change and offers to reload the project. Click <strong>"Load Maven Changes"</strong> (or hit the Maven refresh icon). Maven downloads the JAR to <code style="font-family:'JetBrains Mono',monospace;color:var(--muted)">~/.m2/repository/</code> — a local cache so subsequent builds are instant. The library is now on your classpath and available in your code.
+              <div class="code-block">
+<span class="c-comment">// After reloading — auto-configuration kicks in automatically</span>
+<span class="c-comment">// Spring Boot detects spring-data-jpa on the classpath</span>
+<span class="c-comment">// and auto-configures EntityManager, DataSource, etc.</span>
+<span class="c-comment">// Your repositories now work without any manual wiring.</span>
+
+<span class="c-ann">@Repository</span>
+<span class="c-kw">public interface</span> <span class="c-type">ProductRepository</span> <span class="c-kw">extends</span> <span class="c-type">JpaRepository</span>&lt;<span class="c-type">Product</span>, <span class="c-type">Long</span>&gt; {
+    <span class="c-comment">// findAll(), findById(), save(), delete() — available immediately</span>
+}</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="callout callout-teal">
+      <span class="callout-icon">💡</span>
+      <div class="callout-text">IntelliJ has a built-in <strong>Maven</strong> tool window (right sidebar). It shows your dependency tree, lets you re-download sources, and has a <strong>Dependencies</strong> view to see transitive dependencies. If a class is missing at runtime, look there first.</div>
+    </div>
+
+    <div class="callout callout-green">
+      <span class="callout-icon">✅</span>
+      <div class="callout-text"><strong>You now own the pom.xml.</strong> Five sections, one parent that manages versions, scopes for controlling availability, and a five-step workflow for adding anything new. The next step is project structure — where to put every file, and the four-file pattern behind every feature.</div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta">
+    <div class="cta-left">
+      <h3>Ready for Step 6?</h3>
+      <p>Project structure — where every file goes and the four-file pattern behind every feature.</p>
+    </div>
+    <a class="cta-btn" href="part-6.html">Step 6 — Project Structure →</a>
+  </div>
+
+</div>
+
+<script>
+// ── pom.xml section picker ──
+const pomDetails = {
+  parent: {
+    color: 'var(--blue)',
+    label: '① PARENT',
+    title: 'spring-boot-starter-parent',
+    body: 'Inherits all of Spring Boot\'s <strong>default configuration</strong> — compiler settings, resource filtering, plugin versions, and the full BOM (Bill of Materials) that manages the versions of ~300 libraries. This single line is why you never specify version numbers for Spring starters.',
+  },
+  coords: {
+    color: 'var(--green)',
+    label: '② PROJECT COORDINATES',
+    title: 'groupId · artifactId · version',
+    body: '<strong>groupId</strong> is your organisation\'s namespace (reversed domain: <code style="font-family:\'JetBrains Mono\',monospace">com.shop</code>). <strong>artifactId</strong> is this specific project\'s name. <strong>version</strong> with SNAPSHOT means it\'s still in development — remove SNAPSHOT for a release build.',
+  },
+  props: {
+    color: 'var(--amber)',
+    label: '③ PROPERTIES',
+    title: 'Key–value configuration',
+    body: 'A place to define reusable values, most importantly <code style="font-family:\'JetBrains Mono\',monospace;color:var(--amber)">java.version</code>, which the Spring Boot parent uses to configure the compiler. You can also add <code>app.version</code>, <code>mapstruct.version</code>, or any other value you want to reference with <code style="font-family:\'JetBrains Mono\',monospace">${property.name}</code> elsewhere in the POM.',
+  },
+  deps: {
+    color: 'var(--coral)',
+    label: '④ DEPENDENCIES',
+    title: 'Libraries your app uses',
+    body: 'Every library your app needs is declared here. Spring Boot starters need <strong>no version</strong> — the parent manages that. Notice <code style="font-family:\'JetBrains Mono\',monospace;color:var(--amber)">&lt;scope&gt;test&lt;/scope&gt;</code> on starter-test — it tells Maven this library is only needed when running tests, so it won\'t be included in your final deployable JAR.',
+  },
+  build: {
+    color: 'var(--purple)',
+    label: '⑤ BUILD PLUGIN',
+    title: 'spring-boot-maven-plugin',
+    body: 'This plugin does two critical things: <strong>(1)</strong> it packages your app into a <em>fat JAR</em> — a single runnable file that includes all dependencies, so you can <code style="font-family:\'JetBrains Mono\',monospace">java -jar my-shop.jar</code> anywhere. <strong>(2)</strong> it provides the <code>mvn spring-boot:run</code> command you used in Step 3. Without it, <code>mvn package</code> creates a thin, non-runnable JAR.',
+  },
+};
+
+function selectPom(section) {
+  document.querySelectorAll('.pom-section').forEach(s => s.classList.remove('active'));
+  section.classList.add('active');
+  const d = pomDetails[section.dataset.section];
+  document.getElementById('pom-detail').innerHTML = `
+    <div class="pd-label" style="color:${d.color}">${d.label}</div>
+    <div class="pd-title">${d.title}</div>
+    <div class="pd-body">${d.body}</div>`;
+}
+
+// ── Scope detail ──
+const scopeDetails = {
+  compile: {
+    color: 'var(--green)',
+    label: 'SCOPE: compile (default)',
+    body: 'Available at <strong>compile time</strong>, <strong>test time</strong>, and <strong>included in the final JAR</strong>. This is the default — if you omit <code style="font-family:\'JetBrains Mono\',monospace">&lt;scope&gt;</code>, Maven assumes compile.<br /><br /><strong>When to use:</strong> most of your application dependencies — Spring starters, Jackson, validation libraries, MapStruct.<br /><br /><strong>Example:</strong> <code style="font-family:\'JetBrains Mono\',monospace;color:var(--green-text)">spring-boot-starter-web</code> — your code references Spring MVC annotations at compile time and needs them at runtime.',
+  },
+  test: {
+    color: 'var(--blue)',
+    label: 'SCOPE: test',
+    body: 'Only available when <strong>compiling and running tests</strong>. Not included in the final JAR — keeps it lean.<br /><br /><strong>When to use:</strong> testing frameworks and mocking libraries you don\'t want shipped with your production app.<br /><br /><strong>Examples:</strong> <code style="font-family:\'JetBrains Mono\',monospace;color:var(--green-text)">spring-boot-starter-test</code> (JUnit 5, Mockito, AssertJ), <code>testcontainers</code>. Spring Initializr adds starter-test with test scope automatically.',
+  },
+  runtime: {
+    color: 'var(--amber)',
+    label: 'SCOPE: runtime',
+    body: 'Not needed to <strong>compile</strong> your code, but required when the <strong>app actually runs</strong>. Included in the final JAR.<br /><br /><strong>The classic use case:</strong> JDBC database drivers. Your code uses <code style="font-family:\'JetBrains Mono\',monospace;color:var(--green-text)">DataSource</code> and <code>Connection</code> interfaces (in the JDK or Spring) — it never imports <code>com.mysql.*</code> directly. But the driver must be present at runtime so JDBC can load it.<br /><br /><strong>Examples:</strong> <code style="font-family:\'JetBrains Mono\',monospace;color:var(--green-text)">h2</code>, <code>mysql-connector-j</code>, <code>postgresql</code>.',
+  },
+  provided: {
+    color: 'var(--purple)',
+    label: 'SCOPE: provided',
+    body: 'Available at <strong>compile time</strong> but <strong>not included in the JAR</strong> — the runtime environment is expected to provide it.<br /><br /><strong>When to use:</strong> Libraries that generate code at compile time and are not needed at runtime, or true server-provided APIs.<br /><br /><strong>Examples:</strong> <code style="font-family:\'JetBrains Mono\',monospace;color:var(--green-text)">lombok</code> (annotation processor — generates code before compile, not needed in the JAR), Servlet API when deploying to an external container (rare with Spring Boot\'s embedded server).',
+  },
+};
+
+function selectScope(card) {
+  document.querySelectorAll('.scope-card').forEach(c => {
+    c.classList.remove('active-compile', 'active-test', 'active-runtime', 'active-provided');
+  });
+  const scope = card.dataset.scope;
+  card.classList.add('active-' + scope);
+  const d = scopeDetails[scope];
+  document.getElementById('scope-detail').innerHTML =
+    `<div class="sd-label" style="color:${d.color}">${d.label}</div>${d.body}`;
+}
+
+// ── Workflow accordion ──
+function toggleStep(step) {
+  const isOpen = step.classList.contains('open');
+  document.querySelectorAll('.workflow-step').forEach(s => s.classList.remove('open'));
+  if (!isOpen) step.classList.add('open');
+}
+</script>
+</body>
+</html>
