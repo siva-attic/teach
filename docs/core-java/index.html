@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>OOP with Java — Course</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Fraunces:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f1117;
+    --surface: #161b27;
+    --surface2: #1e2535;
+    --border: #2a3147;
+    --text: #e8eaf0;
+    --muted: #7b8499;
+    --faint: #3d4560;
+    --green: #4ade80;
+    --green-dim: #1a3d2b;
+    --amber: #fbbf24;
+    --amber-dim: #3d2e08;
+    --blue: #60a5fa;
+    --blue-dim: #0f2040;
+    --coral: #f87171;
+    --purple: #a78bfa;
+    --purple-dim: #2d1f4e;
+    --purple-border: rgba(167,139,250,.4);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Fraunces', Georgia, serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.75;
+  }
+
+  .topbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 40px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .back-link {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: .05em;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: color .15s;
+  }
+  .back-link:hover { color: var(--purple); }
+  .topbar-sep {
+    color: var(--faint);
+    font-size: 13px;
+  }
+  .course-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: var(--purple-dim);
+    color: var(--purple);
+    border: 1px solid var(--purple);
+    border-radius: 4px;
+    padding: 2px 8px;
+    letter-spacing: .05em;
+  }
+  .topbar-title {
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--muted);
+  }
+  .topbar-title strong { color: var(--text); font-weight: 400; }
+
+  .page { max-width: 860px; margin: 0 auto; padding: 60px 40px 120px; }
+
+  .hero { margin-bottom: 64px; }
+  .hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--purple);
+    letter-spacing: .1em;
+    margin-bottom: 14px;
+  }
+  .hero h1 {
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 300;
+    line-height: 1.15;
+    letter-spacing: -.02em;
+    margin-bottom: 20px;
+  }
+  .hero h1 em { font-style: italic; color: var(--muted); }
+  .hero-lead {
+    font-size: 18px;
+    font-weight: 300;
+    color: var(--muted);
+    max-width: 560px;
+    line-height: 1.8;
+    margin-bottom: 28px;
+  }
+  .hero-lead strong { color: var(--text); font-weight: 400; }
+
+  .hero-meta {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .hero-meta-item {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .hero-meta-item span { color: var(--text); }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .parts-list { display: flex; flex-direction: column; gap: 12px; }
+
+  .part-card {
+    display: grid;
+    grid-template-columns: 56px 1fr auto;
+    align-items: center;
+    gap: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.15s, transform 0.12s;
+  }
+  .part-card:hover { border-color: var(--purple); transform: translateX(4px); }
+  .part-card.available:hover .part-arrow { color: var(--purple); }
+  .part-card.unavailable { opacity: .45; pointer-events: none; }
+
+  .part-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--faint);
+    text-align: center;
+    line-height: 1;
+  }
+  .part-card.available .part-num { color: var(--purple); }
+
+  .part-info { min-width: 0; }
+  .part-step {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: .1em;
+    margin-bottom: 4px;
+  }
+  .part-title {
+    font-size: 17px;
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .part-desc {
+    font-size: 14px;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  .part-arrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
+    color: var(--faint);
+    flex-shrink: 0;
+    transition: color 0.15s;
+  }
+
+  .status-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .badge-live { background: var(--purple-dim); color: var(--purple); border: 1px solid var(--purple); }
+  .badge-soon { background: var(--surface2); color: var(--faint); border: 1px solid var(--border); }
+
+  .section-group {
+    margin-bottom: 48px;
+  }
+
+  @media (max-width: 600px) {
+    .page { padding: 32px 20px 80px; }
+    .topbar { padding: 12px 20px; }
+    .part-card { grid-template-columns: 40px 1fr auto; gap: 14px; padding: 16px 18px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back-link" href="../index.html">← All Courses</a>
+  <span class="topbar-sep">/</span>
+  <span class="course-badge">COURSE</span>
+  <span class="topbar-title"><strong>OOP with Java</strong> &nbsp;·&nbsp; All Parts</span>
+</div>
+
+<div class="page">
+
+  <div class="hero">
+    <div class="hero-eyebrow">OOP WITH JAVA</div>
+    <h1>Think in objects,<br /><em>write better code</em></h1>
+    <p class="hero-lead">A ground-up walkthrough of <strong>object-oriented programming in Java</strong> — from the very first class to design patterns. Every concept is explained through working code you build yourself.</p>
+    <div class="hero-meta">
+      <div class="hero-meta-item">☕ &nbsp;<span>Java 21</span></div>
+      <div class="hero-meta-item">▶ &nbsp;<span>24 lessons</span></div>
+      <div class="hero-meta-item">⏱ &nbsp;<span>~6 hours</span></div>
+      <div class="hero-meta-item">📶 &nbsp;<span>Beginner</span></div>
+    </div>
+  </div>
+
+  <!-- Section 1: Java Basics -->
+  <div class="section-group">
+    <div class="section-label">Part 1 — Java Basics</div>
+    <div class="parts-list">
+
+      <a class="part-card unavailable" href="#">
+        <div class="part-num">1</div>
+        <div class="part-info">
+          <div class="part-step">LESSON 1</div>
+          <div class="part-title">Introduction to Java</div>
+          <div class="part-desc">What Java is, how the JVM works, and why it still matters in 2024.</div>
+        </div>
+        <span class="status-badge badge-soon">soon</span>
+      </a>
+
+      <a class="part-card unavailable" href="#">
+        <div class="part-num">2</div>
+        <div class="part-info">
+          <div class="part-step">LESSON 2</div>
+          <div class="part-title">Variables and Data Types</div>
+          <div class="part-desc">Primitives vs reference types — int, long, boolean, String, and when each fits.</div>
+        </div>
+        <span class="status-badge badge-soon">soon</span>
+      </a>
+
+      <a class="part-card unavailable" href="#">
+        <div class="part-num">3</div>
+        <div class="part-info">
+          <div class="part-step">LESSON 3</div>
+          <div class="part-title">Control Flow</div>
+          <div class="part-desc">if/else, switch expressions, for, while — the full toolkit with real examples.</div>
+        </div>
+        <span class="status-badge badge-soon">soon</span>
+      </a>
+
+      <a class="part-card unavailable" href="#">
+        <div class="part-num">4</div>
+        <div class="part-info">
+          <div class="part-step">LESSON 4</div>
+          <div class="part-title">Methods</div>
+          <div class="part-desc">Defining, calling, overloading, and returning values — Java's building blocks.</div>
+        </div>
+        <span class="status-badge badge-soon">soon</span>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- Section 2: OOP Pillars -->
+  <div class="section-group">
+    <div class="section-label">Part 2 — The Four Pillars of OOP</div>
+    <div class="parts-list">
+
+      <a class="part-card unavailable" href="#">
+        <div class="part-num">5</div>
+        <div class="part-info">
+          <div class="part-step">LESSON 5</div>
+          <div class="part-title">Classes and Objects</div>
+          <div class="part-desc">What a class really is, how to model real-world things, and the new keyword.</div>
+        </div>
+        <span class="status-badge badge-soon">soon</span>
+      </a>
+
+      <a class="part-card unavailable" href="#">
+        <div class="part-num">6</div>
+        <div class="part-info">
+          <div class="part-step">LESSON 6</div>
+          <div class="part-title">Encapsulation</div>
+          <div class="part-desc">Access modifiers, getters, setters, and why hiding data makes code safer.</div>
+        </div>
+        <span class="status-badge badge-soon">soon</span>
+      </a>
+
+      <a class="part-card unavailable" href="#">
+        <div class="part-num">7</div>
+        <div class="part-info">
+          <div class="part-step">LESSON 7</div>
+          <div class="part-title">Inheritance</div>
+          <div class="part-desc">extends, super, constructor chaining, and when to inherit vs compose.</div>
+        </div>
+        <span class="status-badge badge-soon">soon</span>
+      </a>
+
+      <a class="part-card unavailable" href="#">
+        <div class="part-num">8</div>
+        <div class="part-info">
+          <div class="part-step">LESSON 8</div>
+          <div class="part-title">Polymorphism</div>
+          <div class="part-desc">Method overriding, dynamic dispatch, and the power of treating objects by their type.</div>
+        </div>
+        <span class="status-badge badge-soon">soon</span>
+      </a>
+
+      <a class="part-card unavailable" href="#">
+        <div class="part-num">9</div>
+        <div class="part-info">
+          <div class="part-step">LESSON 9</div>
+          <div class="part-title">Abstraction</div>
+          <div class="part-desc">Abstract classes vs interfaces — hiding the how and exposing only the what.</div>
+        </div>
+        <span class="status-badge badge-soon">soon</span>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- Section 3: Java Deeper -->
+  <div class="section-group">
+    <div class="section-label">Part 3 — Going Deeper</div>
+    <div class="parts-list">
+
+      <a class="part-card unavailable" href="#">
+        <div class="part-num">10</div>
+        <div class="part-info">
+          <div class="part-step">LESSON 10</div>
+          <div class="part-title">Interfaces in Depth</div>
+          <div class="part-desc">Default methods, functional interfaces, and why interfaces beat abstract classes for APIs.</div>
+        </div>
+        <span class="status-badge badge-soon">soon</span>
+      </a>
+
+      <a class="part-card unavailable" href="#">
+        <div class="part-num">11</div>
+        <div class="part-info">
+          <div class="part-step">LESSON 11</div>
+          <div class="part-title">Generics</div>
+          <div class="part-desc">Type parameters, bounded wildcards, and writing code that works for any type safely.</div>
+        </div>
+        <span class="status-badge badge-soon">soon</span>
+      </a>
+
+      <a class="part-card unavailable" href="#">
+        <div class="part-num">12</div>
+        <div class="part-info">
+          <div class="part-step">LESSON 12</div>
+          <div class="part-title">Exception Handling</div>
+          <div class="part-desc">Checked vs unchecked, try-with-resources, and when to catch vs propagate.</div>
+        </div>
+        <span class="status-badge badge-soon">soon</span>
+      </a>
+
+      <a class="part-card unavailable" href="#">
+        <div class="part-num">13</div>
+        <div class="part-info">
+          <div class="part-step">LESSON 13</div>
+          <div class="part-title">Collections Framework</div>
+          <div class="part-desc">List, Set, Map — which to pick, how they work under the hood, and common pitfalls.</div>
+        </div>
+        <span class="status-badge badge-soon">soon</span>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- Section 4: Modern Java -->
+  <div class="section-group">
+    <div class="section-label">Part 4 — Modern Java</div>
+    <div class="parts-list">
+
+      <a class="part-card unavailable" href="#">
+        <div class="part-num">14</div>
+        <div class="part-info">
+          <div class="part-step">LESSON 14</div>
+          <div class="part-title">Lambda Expressions</div>
+          <div class="part-desc">Concise inline behavior — what lambdas replace and how to read them fluently.</div>
+        </div>
+        <span class="status-badge badge-soon">soon</span>
+      </a>
+
+      <a class="part-card unavailable" href="#">
+        <div class="part-num">15</div>
+        <div class="part-info">
+          <div class="part-step">LESSON 15</div>
+          <div class="part-title">Streams API</div>
+          <div class="part-desc">filter, map, reduce, collect — processing collections without a single for-loop.</div>
+        </div>
+        <span class="status-badge badge-soon">soon</span>
+      </a>
+
+      <a class="part-card unavailable" href="#">
+        <div class="part-num">16</div>
+        <div class="part-info">
+          <div class="part-step">LESSON 16</div>
+          <div class="part-title">Records and Sealed Classes</div>
+          <div class="part-desc">Modern Java data modeling — immutable value types and closed type hierarchies.</div>
+        </div>
+        <span class="status-badge badge-soon">soon</span>
+      </a>
+
+      <a class="part-card unavailable" href="#">
+        <div class="part-num">17</div>
+        <div class="part-info">
+          <div class="part-step">LESSON 17</div>
+          <div class="part-title">Optional</div>
+          <div class="part-desc">Eliminating NullPointerException — how to represent absence without null.</div>
+        </div>
+        <span class="status-badge badge-soon">soon</span>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- Section 5: Design Patterns -->
+  <div class="section-group">
+    <div class="section-label">Part 5 — Design Patterns</div>
+    <div class="parts-list">
+
+      <a class="part-card unavailable" href="#">
+        <div class="part-num">18</div>
+        <div class="part-info">
+          <div class="part-step">LESSON 18</div>
+          <div class="part-title">SOLID Principles</div>
+          <div class="part-desc">The five rules that make OOP code maintainable — each shown with a before/after example.</div>
+        </div>
+        <span class="status-badge badge-soon">soon</span>
+      </a>
+
+      <a class="part-card unavailable" href="#">
+        <div class="part-num">19</div>
+        <div class="part-info">
+          <div class="part-step">LESSON 19</div>
+          <div class="part-title">Creational Patterns</div>
+          <div class="part-desc">Singleton, Factory, Builder — when to use each and how to implement them cleanly.</div>
+        </div>
+        <span class="status-badge badge-soon">soon</span>
+      </a>
+
+      <a class="part-card unavailable" href="#">
+        <div class="part-num">20</div>
+        <div class="part-info">
+          <div class="part-step">LESSON 20</div>
+          <div class="part-title">Structural Patterns</div>
+          <div class="part-desc">Decorator, Adapter, Facade — composing objects instead of inheriting behaviour.</div>
+        </div>
+        <span class="status-badge badge-soon">soon</span>
+      </a>
+
+      <a class="part-card unavailable" href="#">
+        <div class="part-num">21</div>
+        <div class="part-info">
+          <div class="part-step">LESSON 21</div>
+          <div class="part-title">Behavioural Patterns</div>
+          <div class="part-desc">Strategy, Observer, Command — making object interactions explicit and swappable.</div>
+        </div>
+        <span class="status-badge badge-soon">soon</span>
+      </a>
+
+      <a class="part-card unavailable" href="#">
+        <div class="part-num">22</div>
+        <div class="part-info">
+          <div class="part-step">LESSON 22</div>
+          <div class="part-title">Dependency Injection</div>
+          <div class="part-desc">Wiring objects together without tight coupling — the foundation of every major framework.</div>
+        </div>
+        <span class="status-badge badge-soon">soon</span>
+      </a>
+
+      <a class="part-card unavailable" href="#">
+        <div class="part-num">23</div>
+        <div class="part-info">
+          <div class="part-step">LESSON 23</div>
+          <div class="part-title">Writing Testable Code</div>
+          <div class="part-desc">Designing classes so that unit tests are easy to write and easy to read.</div>
+        </div>
+        <span class="status-badge badge-soon">soon</span>
+      </a>
+
+      <a class="part-card unavailable" href="#">
+        <div class="part-num">24</div>
+        <div class="part-info">
+          <div class="part-step">LESSON 24</div>
+          <div class="part-title">Putting It All Together</div>
+          <div class="part-desc">Build a small, well-structured Java app from scratch applying every concept in the course.</div>
+        </div>
+        <span class="status-badge badge-soon">soon</span>
+      </a>
+
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Spring Boot Course</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Fraunces:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f1117;
+    --surface: #161b27;
+    --surface2: #1e2535;
+    --border: #2a3147;
+    --text: #e8eaf0;
+    --muted: #7b8499;
+    --faint: #3d4560;
+    --green: #4ade80;
+    --green-dim: #1a3d2b;
+    --green-text: #86efac;
+    --amber: #fbbf24;
+    --amber-dim: #3d2e08;
+    --blue: #60a5fa;
+    --blue-dim: #0f2040;
+    --coral: #f87171;
+    --teal: #2dd4bf;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Fraunces', Georgia, serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.75;
+  }
+
+  .topbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 40px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .course-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: var(--green-dim);
+    color: var(--green);
+    border: 1px solid var(--green);
+    border-radius: 4px;
+    padding: 2px 8px;
+    letter-spacing: .05em;
+  }
+  .topbar-title {
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--muted);
+  }
+  .topbar-title strong { color: var(--text); font-weight: 400; }
+
+  .page { max-width: 860px; margin: 0 auto; padding: 60px 40px 120px; }
+
+  .hero { margin-bottom: 64px; }
+  .hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--green);
+    letter-spacing: .1em;
+    margin-bottom: 14px;
+  }
+  .hero h1 {
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 300;
+    line-height: 1.15;
+    letter-spacing: -.02em;
+    margin-bottom: 20px;
+  }
+  .hero h1 em { font-style: italic; color: var(--muted); }
+  .hero-lead {
+    font-size: 18px;
+    font-weight: 300;
+    color: var(--muted);
+    max-width: 560px;
+    line-height: 1.8;
+  }
+  .hero-lead strong { color: var(--text); font-weight: 400; }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .parts-list { display: flex; flex-direction: column; gap: 12px; }
+
+  .part-card {
+    display: grid;
+    grid-template-columns: 56px 1fr auto;
+    align-items: center;
+    gap: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.15s, transform 0.12s;
+  }
+  .part-card:hover { border-color: var(--green); transform: translateX(4px); }
+  .part-card.available:hover .part-arrow { color: var(--green); }
+  .part-card.unavailable { opacity: .45; pointer-events: none; }
+
+  .part-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--faint);
+    text-align: center;
+    line-height: 1;
+  }
+  .part-card.available .part-num { color: var(--green); }
+
+  .part-info { min-width: 0; }
+  .part-step {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: .1em;
+    margin-bottom: 4px;
+  }
+  .part-title {
+    font-size: 17px;
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .part-desc {
+    font-size: 14px;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  .part-arrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
+    color: var(--faint);
+    flex-shrink: 0;
+    transition: color 0.15s;
+  }
+
+  .status-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .badge-live { background: var(--green-dim); color: var(--green); border: 1px solid var(--green); }
+  .badge-soon { background: var(--surface2); color: var(--faint); border: 1px solid var(--border); }
+
+  @media (max-width: 600px) {
+    .page { padding: 32px 20px 80px; }
+    .topbar { padding: 12px 20px; }
+    .part-card { grid-template-columns: 40px 1fr auto; gap: 14px; padding: 16px 18px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="course-badge">COURSE</span>
+  <span class="topbar-title"><strong>Spring Boot</strong> &nbsp;·&nbsp; All Parts</span>
+</div>
+
+<div class="page">
+
+  <div class="hero">
+    <div class="hero-eyebrow">SPRING BOOT COURSE</div>
+    <h1>Build real apps<br /><em>from scratch</em></h1>
+    <p class="hero-lead">A no-magic walkthrough of <strong>Spring Boot</strong> — from zero to a working REST API. Each part is a short, focused lesson you can finish in one sitting.</p>
+  </div>
+
+  <div class="section-label">All parts</div>
+
+  <div class="parts-list">
+
+    <a class="part-card unavailable" href="#">
+      <div class="part-num">1</div>
+      <div class="part-info">
+        <div class="part-step">STEP 1</div>
+        <div class="part-title">What is Spring Boot?</div>
+        <div class="part-desc">The 30-second pitch. Why it exists and what problem it solves.</div>
+      </div>
+      <span class="status-badge badge-soon">soon</span>
+    </a>
+
+    <a class="part-card unavailable" href="#">
+      <div class="part-num">2</div>
+      <div class="part-info">
+        <div class="part-step">STEP 2</div>
+        <div class="part-title">Setting Up Your Environment</div>
+        <div class="part-desc">Java, Maven, and your IDE — ready in under 10 minutes.</div>
+      </div>
+      <span class="status-badge badge-soon">soon</span>
+    </a>
+
+    <a class="part-card unavailable" href="#">
+      <div class="part-num">3</div>
+      <div class="part-info">
+        <div class="part-step">STEP 3</div>
+        <div class="part-title">Your First Spring Boot App</div>
+        <div class="part-desc">Generate, run, and understand what happens at startup.</div>
+      </div>
+      <span class="status-badge badge-soon">soon</span>
+    </a>
+
+    <a class="part-card unavailable" href="#">
+      <div class="part-num">4</div>
+      <div class="part-info">
+        <div class="part-step">STEP 4</div>
+        <div class="part-title">How Spring Boot Works</div>
+        <div class="part-desc">Auto-configuration, starters, and the application context explained simply.</div>
+      </div>
+      <span class="status-badge badge-soon">soon</span>
+    </a>
+
+    <a class="part-card unavailable" href="#">
+      <div class="part-num">5</div>
+      <div class="part-info">
+        <div class="part-step">STEP 5</div>
+        <div class="part-title">Dependencies and the POM</div>
+        <div class="part-desc">Adding libraries with Maven — no guessing, no trial and error.</div>
+      </div>
+      <span class="status-badge badge-soon">soon</span>
+    </a>
+
+    <a class="part-card available" href="part-6.html">
+      <div class="part-num">6</div>
+      <div class="part-info">
+        <div class="part-step">STEP 6</div>
+        <div class="part-title">Project Structure</div>
+        <div class="part-desc">Where every file goes and the four-file pattern behind every feature.</div>
+      </div>
+      <span class="part-arrow">→</span>
+    </a>
+
+    <a class="part-card unavailable" href="#">
+      <div class="part-num">7</div>
+      <div class="part-info">
+        <div class="part-step">STEP 7</div>
+        <div class="part-title">Your First Controller</div>
+        <div class="part-desc">Writing a REST endpoint line by line — no magic left unexplained.</div>
+      </div>
+      <span class="status-badge badge-soon">soon</span>
+    </a>
+
+    <a class="part-card unavailable" href="#">
+      <div class="part-num">8</div>
+      <div class="part-info">
+        <div class="part-step">STEP 8</div>
+        <div class="part-title">Connecting to a Database</div>
+        <div class="part-desc">Spring Data JPA, H2, and your first repository — wired up and tested.</div>
+      </div>
+      <span class="status-badge badge-soon">soon</span>
+    </a>
+
+    <a class="part-card unavailable" href="#">
+      <div class="part-num">9</div>
+      <div class="part-info">
+        <div class="part-step">STEP 9</div>
+        <div class="part-title">Services and Business Logic</div>
+        <div class="part-desc">Keeping your controllers thin and your logic testable.</div>
+      </div>
+      <span class="status-badge badge-soon">soon</span>
+    </a>
+
+    <a class="part-card unavailable" href="#">
+      <div class="part-num">10</div>
+      <div class="part-info">
+        <div class="part-step">STEP 10</div>
+        <div class="part-title">Building a Complete REST API</div>
+        <div class="part-desc">CRUD from end to end — create, read, update, delete with real data.</div>
+      </div>
+      <span class="status-badge badge-soon">soon</span>
+    </a>
+
+  </div>
+</div>
+
+</body>
+</html>

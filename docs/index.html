@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Spring Boot Course</title>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Fraunces:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet" />
+<title>Courses</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -18,294 +18,511 @@
     --faint: #3d4560;
     --green: #4ade80;
     --green-dim: #1a3d2b;
-    --green-text: #86efac;
-    --amber: #fbbf24;
-    --amber-dim: #3d2e08;
     --blue: #60a5fa;
     --blue-dim: #0f2040;
+    --amber: #fbbf24;
+    --amber-dim: #3d2e08;
     --coral: #f87171;
+    --purple: #a78bfa;
+    --purple-dim: #2d1f4e;
     --teal: #2dd4bf;
+    --teal-dim: #0d2e2a;
   }
 
   html { scroll-behavior: smooth; }
 
   body {
-    font-family: 'Fraunces', Georgia, serif;
+    font-family: 'Inter', system-ui, sans-serif;
     background: var(--bg);
     color: var(--text);
     min-height: 100vh;
-    line-height: 1.75;
+    line-height: 1.6;
   }
 
-  .topbar {
+  /* ── NAV ── */
+  .nav {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 14px 40px;
-    border-bottom: 1px solid var(--border);
+    justify-content: space-between;
+    padding: 0 48px;
+    height: 64px;
     background: var(--surface);
+    border-bottom: 1px solid var(--border);
     position: sticky;
     top: 0;
     z-index: 100;
   }
-  .course-badge {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    background: var(--green-dim);
-    color: var(--green);
-    border: 1px solid var(--green);
-    border-radius: 4px;
-    padding: 2px 8px;
-    letter-spacing: .05em;
+  .nav-brand {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -.02em;
   }
-  .topbar-title {
-    font-family: 'Fraunces', serif;
-    font-size: 15px;
-    font-weight: 300;
+  .nav-brand span { color: var(--blue); }
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+  .nav-links a {
     color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: color .15s;
   }
-  .topbar-title strong { color: var(--text); font-weight: 400; }
+  .nav-links a:hover { color: var(--text); }
 
-  .page { max-width: 860px; margin: 0 auto; padding: 60px 40px 120px; }
-
-  .hero { margin-bottom: 64px; }
+  /* ── HERO ── */
+  .hero {
+    background: linear-gradient(135deg, #0f1117 0%, #161b27 50%, #0d1520 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 72px 48px;
+    text-align: center;
+  }
   .hero-eyebrow {
-    font-family: 'JetBrains Mono', monospace;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     font-size: 12px;
-    color: var(--green);
+    font-weight: 600;
     letter-spacing: .1em;
-    margin-bottom: 14px;
+    text-transform: uppercase;
+    color: var(--blue);
+    background: var(--blue-dim);
+    border: 1px solid rgba(96,165,250,.3);
+    border-radius: 20px;
+    padding: 4px 14px;
+    margin-bottom: 24px;
   }
   .hero h1 {
-    font-size: clamp(32px, 5vw, 52px);
-    font-weight: 300;
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 700;
     line-height: 1.15;
-    letter-spacing: -.02em;
-    margin-bottom: 20px;
+    letter-spacing: -.03em;
+    margin-bottom: 16px;
   }
-  .hero h1 em { font-style: italic; color: var(--muted); }
-  .hero-lead {
-    font-size: 18px;
-    font-weight: 300;
+  .hero h1 .highlight { color: var(--blue); }
+  .hero-sub {
+    font-size: 17px;
     color: var(--muted);
-    max-width: 560px;
-    line-height: 1.8;
+    max-width: 540px;
+    margin: 0 auto 36px;
+    line-height: 1.75;
   }
-  .hero-lead strong { color: var(--text); font-weight: 400; }
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 48px;
+    flex-wrap: wrap;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text);
+    display: block;
+  }
+  .stat-label {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
 
-  .section-label {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: var(--muted);
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    margin-bottom: 24px;
+  /* ── FILTERS ── */
+  .filters-bar {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 48px 0;
     display: flex;
     align-items: center;
-    gap: 10px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
   }
-  .section-label::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
+  .filters-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .filters-count {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .filter-pills {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .pill {
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .pill:hover, .pill.active {
+    border-color: var(--blue);
+    color: var(--blue);
+    background: var(--blue-dim);
   }
 
-  .parts-list { display: flex; flex-direction: column; gap: 12px; }
-
-  .part-card {
+  /* ── GRID ── */
+  .courses-section {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 48px 100px;
+  }
+  .courses-grid {
     display: grid;
-    grid-template-columns: 56px 1fr auto;
-    align-items: center;
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+  }
+
+  /* ── COURSE CARD ── */
+  .course-card {
+    display: flex;
+    flex-direction: column;
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 20px 24px;
+    border-radius: 16px;
+    overflow: hidden;
     text-decoration: none;
     color: inherit;
-    transition: border-color 0.15s, transform 0.12s;
+    transition: border-color .15s, transform .15s, box-shadow .15s;
   }
-  .part-card:hover { border-color: var(--green); transform: translateX(4px); }
-  .part-card.available:hover .part-arrow { color: var(--green); }
-  .part-card.unavailable { opacity: .45; pointer-events: none; }
+  .course-card:hover {
+    border-color: var(--blue);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0,0,0,.4);
+  }
 
-  .part-num {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 22px;
-    font-weight: 600;
-    color: var(--faint);
-    text-align: center;
+  .course-thumb {
+    position: relative;
+    height: 190px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .course-thumb-icon {
+    font-size: 64px;
     line-height: 1;
+    position: relative;
+    z-index: 1;
+    filter: drop-shadow(0 4px 16px rgba(0,0,0,.5));
   }
-  .part-card.available .part-num { color: var(--green); }
+  .course-thumb-bg {
+    position: absolute;
+    inset: 0;
+  }
+  .thumb-java .course-thumb-bg {
+    background: linear-gradient(135deg, #1a1035 0%, #2d1f4e 40%, #1a0d35 100%);
+  }
+  .thumb-java .glow {
+    position: absolute;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(167,139,250,.25) 0%, transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+  }
+  .thumb-spring .course-thumb-bg {
+    background: linear-gradient(135deg, #0a1f0e 0%, #1a3d2b 40%, #0a1a10 100%);
+  }
+  .thumb-spring .glow {
+    position: absolute;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(74,222,128,.2) 0%, transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+  }
 
-  .part-info { min-width: 0; }
-  .part-step {
-    font-family: 'JetBrains Mono', monospace;
+  .course-badge {
+    position: absolute;
+    top: 14px;
+    left: 14px;
     font-size: 10px;
-    color: var(--muted);
-    letter-spacing: .1em;
-    margin-bottom: 4px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 20px;
+    z-index: 2;
   }
-  .part-title {
-    font-size: 17px;
-    font-weight: 400;
-    color: var(--text);
-    margin-bottom: 4px;
+  .badge-new {
+    background: var(--amber-dim);
+    color: var(--amber);
+    border: 1px solid rgba(251,191,36,.4);
   }
-  .part-desc {
-    font-size: 14px;
-    color: var(--muted);
-    font-weight: 300;
+  .badge-bestseller {
+    background: var(--green-dim);
+    color: var(--green);
+    border: 1px solid rgba(74,222,128,.4);
   }
 
-  .part-arrow {
-    font-family: 'JetBrains Mono', monospace;
+  .course-body {
+    padding: 22px 22px 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .course-level {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .level-dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    margin-right: 5px;
+    vertical-align: middle;
+    position: relative;
+    top: -1px;
+  }
+  .dot-beginner { background: var(--green); }
+  .dot-intermediate { background: var(--amber); }
+
+  .course-title {
     font-size: 18px;
-    color: var(--faint);
-    flex-shrink: 0;
-    transition: color 0.15s;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.3;
+    margin-bottom: 10px;
+    letter-spacing: -.01em;
   }
 
-  .status-badge {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    padding: 2px 7px;
-    border-radius: 4px;
-    flex-shrink: 0;
+  .course-desc {
+    font-size: 13.5px;
+    color: var(--muted);
+    line-height: 1.7;
+    flex: 1;
+    margin-bottom: 18px;
   }
-  .badge-live { background: var(--green-dim); color: var(--green); border: 1px solid var(--green); }
-  .badge-soon { background: var(--surface2); color: var(--faint); border: 1px solid var(--border); }
 
-  @media (max-width: 600px) {
-    .page { padding: 32px 20px 80px; }
-    .topbar { padding: 12px 20px; }
-    .part-card { grid-template-columns: 40px 1fr auto; gap: 14px; padding: 16px 18px; }
+  .course-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 18px;
+  }
+  .tag {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    background: var(--surface2);
+  }
+
+  .course-rating {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 18px;
+  }
+  .stars { color: var(--amber); font-size: 13px; letter-spacing: 1px; }
+  .rating-num { font-size: 13px; font-weight: 600; color: var(--text); }
+  .rating-count { font-size: 12px; color: var(--muted); }
+
+  .course-footer {
+    padding: 14px 22px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .course-meta-info {
+    display: flex;
+    gap: 16px;
+  }
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .meta-icon { font-size: 13px; }
+
+  .course-cta {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--blue);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: gap .15s;
+  }
+  .course-card:hover .course-cta { gap: 8px; }
+
+  /* ── COMING SOON ── */
+  .course-card.soon {
+    opacity: .5;
+    pointer-events: none;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 48px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  @media (max-width: 640px) {
+    .nav { padding: 0 20px; }
+    .nav-links { display: none; }
+    .hero { padding: 48px 20px; }
+    .filters-bar, .courses-section { padding-left: 20px; padding-right: 20px; }
+    .courses-grid { grid-template-columns: 1fr; }
+    .hero-stats { gap: 28px; }
   }
 </style>
 </head>
 <body>
 
-<div class="topbar">
-  <span class="course-badge">COURSE</span>
-  <span class="topbar-title"><strong>Spring Boot</strong> &nbsp;·&nbsp; All Parts</span>
-</div>
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-brand">learn<span>.</span>dev</div>
+  <ul class="nav-links">
+    <li><a href="#">Courses</a></li>
+    <li><a href="#">Paths</a></li>
+    <li><a href="#">Blog</a></li>
+  </ul>
+</nav>
 
-<div class="page">
-
-  <div class="hero">
-    <div class="hero-eyebrow">SPRING BOOT COURSE</div>
-    <h1>Build real apps<br /><em>from scratch</em></h1>
-    <p class="hero-lead">A no-magic walkthrough of <strong>Spring Boot</strong> — from zero to a working REST API. Each part is a short, focused lesson you can finish in one sitting.</p>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">Java &amp; Spring Boot</div>
+  <h1>Master <span class="highlight">Backend Development</span><br />from first principles</h1>
+  <p class="hero-sub">Short, focused courses that take you from zero to production-ready code. No hand-waving — just real projects.</p>
+  <div class="hero-stats">
+    <div class="stat">
+      <span class="stat-num">2</span>
+      <div class="stat-label">Courses</div>
+    </div>
+    <div class="stat">
+      <span class="stat-num">50+</span>
+      <div class="stat-label">Lessons</div>
+    </div>
+    <div class="stat">
+      <span class="stat-num">1k+</span>
+      <div class="stat-label">Students</div>
+    </div>
   </div>
+</section>
 
-  <div class="section-label">All parts</div>
-
-  <div class="parts-list">
-
-    <a class="part-card unavailable" href="#">
-      <div class="part-num">1</div>
-      <div class="part-info">
-        <div class="part-step">STEP 1</div>
-        <div class="part-title">What is Spring Boot?</div>
-        <div class="part-desc">The 30-second pitch. Why it exists and what problem it solves.</div>
-      </div>
-      <span class="status-badge badge-soon">soon</span>
-    </a>
-
-    <a class="part-card unavailable" href="#">
-      <div class="part-num">2</div>
-      <div class="part-info">
-        <div class="part-step">STEP 2</div>
-        <div class="part-title">Setting Up Your Environment</div>
-        <div class="part-desc">Java, Maven, and your IDE — ready in under 10 minutes.</div>
-      </div>
-      <span class="status-badge badge-soon">soon</span>
-    </a>
-
-    <a class="part-card unavailable" href="#">
-      <div class="part-num">3</div>
-      <div class="part-info">
-        <div class="part-step">STEP 3</div>
-        <div class="part-title">Your First Spring Boot App</div>
-        <div class="part-desc">Generate, run, and understand what happens at startup.</div>
-      </div>
-      <span class="status-badge badge-soon">soon</span>
-    </a>
-
-    <a class="part-card unavailable" href="#">
-      <div class="part-num">4</div>
-      <div class="part-info">
-        <div class="part-step">STEP 4</div>
-        <div class="part-title">How Spring Boot Works</div>
-        <div class="part-desc">Auto-configuration, starters, and the application context explained simply.</div>
-      </div>
-      <span class="status-badge badge-soon">soon</span>
-    </a>
-
-    <a class="part-card unavailable" href="#">
-      <div class="part-num">5</div>
-      <div class="part-info">
-        <div class="part-step">STEP 5</div>
-        <div class="part-title">Dependencies and the POM</div>
-        <div class="part-desc">Adding libraries with Maven — no guessing, no trial and error.</div>
-      </div>
-      <span class="status-badge badge-soon">soon</span>
-    </a>
-
-    <a class="part-card available" href="part-1.html">
-      <div class="part-num">6</div>
-      <div class="part-info">
-        <div class="part-step">STEP 6</div>
-        <div class="part-title">Project Structure</div>
-        <div class="part-desc">Where every file goes and the four-file pattern behind every feature.</div>
-      </div>
-      <span class="part-arrow">→</span>
-    </a>
-
-    <a class="part-card unavailable" href="#">
-      <div class="part-num">7</div>
-      <div class="part-info">
-        <div class="part-step">STEP 7</div>
-        <div class="part-title">Your First Controller</div>
-        <div class="part-desc">Writing a REST endpoint line by line — no magic left unexplained.</div>
-      </div>
-      <span class="status-badge badge-soon">soon</span>
-    </a>
-
-    <a class="part-card unavailable" href="#">
-      <div class="part-num">8</div>
-      <div class="part-info">
-        <div class="part-step">STEP 8</div>
-        <div class="part-title">Connecting to a Database</div>
-        <div class="part-desc">Spring Data JPA, H2, and your first repository — wired up and tested.</div>
-      </div>
-      <span class="status-badge badge-soon">soon</span>
-    </a>
-
-    <a class="part-card unavailable" href="#">
-      <div class="part-num">9</div>
-      <div class="part-info">
-        <div class="part-step">STEP 9</div>
-        <div class="part-title">Services and Business Logic</div>
-        <div class="part-desc">Keeping your controllers thin and your logic testable.</div>
-      </div>
-      <span class="status-badge badge-soon">soon</span>
-    </a>
-
-    <a class="part-card unavailable" href="#">
-      <div class="part-num">10</div>
-      <div class="part-info">
-        <div class="part-step">STEP 10</div>
-        <div class="part-title">Building a Complete REST API</div>
-        <div class="part-desc">CRUD from end to end — create, read, update, delete with real data.</div>
-      </div>
-      <span class="status-badge badge-soon">soon</span>
-    </a>
-
+<!-- FILTERS -->
+<div class="filters-bar">
+  <div>
+    <div class="filters-title">All Courses</div>
+    <div class="filters-count">2 courses available</div>
+  </div>
+  <div class="filter-pills">
+    <button class="pill active">All</button>
+    <button class="pill">Beginner</button>
+    <button class="pill">Intermediate</button>
   </div>
 </div>
+
+<!-- COURSES -->
+<div class="courses-section">
+  <div class="courses-grid">
+
+    <!-- OOP with Java -->
+    <a class="course-card" href="core-java/index.html">
+      <div class="course-thumb thumb-java">
+        <div class="course-thumb-bg"></div>
+        <div class="glow"></div>
+        <div class="course-thumb-icon">☕</div>
+        <span class="course-badge badge-new">New</span>
+      </div>
+      <div class="course-body">
+        <div class="course-level">
+          <span class="level-dot dot-beginner"></span>Beginner
+        </div>
+        <div class="course-title">OOP with Java</div>
+        <div class="course-desc">
+          Master object-oriented programming in Java — classes, inheritance, polymorphism, interfaces, and design patterns. Build a solid foundation that makes every framework easier to learn.
+        </div>
+        <div class="course-tags">
+          <span class="tag">Java</span>
+          <span class="tag">OOP</span>
+          <span class="tag">Design Patterns</span>
+          <span class="tag">Interfaces</span>
+        </div>
+        <div class="course-rating">
+          <span class="stars">★★★★★</span>
+          <span class="rating-num">4.9</span>
+          <span class="rating-count">(128 ratings)</span>
+        </div>
+      </div>
+      <div class="course-footer">
+        <div class="course-meta-info">
+          <div class="meta-item"><span class="meta-icon">▶</span> 24 lessons</div>
+          <div class="meta-item"><span class="meta-icon">⏱</span> 6 hrs</div>
+        </div>
+        <span class="course-cta">Start learning →</span>
+      </div>
+    </a>
+
+    <!-- Spring Boot Fundamentals -->
+    <a class="course-card" href="spring-boot/index.html">
+      <div class="course-thumb thumb-spring">
+        <div class="course-thumb-bg"></div>
+        <div class="glow"></div>
+        <div class="course-thumb-icon">🍃</div>
+        <span class="course-badge badge-bestseller">Bestseller</span>
+      </div>
+      <div class="course-body">
+        <div class="course-level">
+          <span class="level-dot dot-intermediate"></span>Intermediate
+        </div>
+        <div class="course-title">Spring Boot Fundamentals</div>
+        <div class="course-desc">
+          A no-magic walkthrough of Spring Boot — from zero to a production-ready REST API. Covers auto-configuration, Spring Data JPA, validation, security basics, and testing.
+        </div>
+        <div class="course-tags">
+          <span class="tag">Spring Boot</span>
+          <span class="tag">REST API</span>
+          <span class="tag">JPA</span>
+          <span class="tag">Testing</span>
+        </div>
+        <div class="course-rating">
+          <span class="stars">★★★★★</span>
+          <span class="rating-num">4.8</span>
+          <span class="rating-count">(312 ratings)</span>
+        </div>
+      </div>
+      <div class="course-footer">
+        <div class="course-meta-info">
+          <div class="meta-item"><span class="meta-icon">▶</span> 10 lessons</div>
+          <div class="meta-item"><span class="meta-icon">⏱</span> 4 hrs</div>
+        </div>
+        <span class="course-cta">Start learning →</span>
+      </div>
+    </a>
+
+  </div>
+</div>
+
+<footer>
+  &copy; 2026 learn.dev &nbsp;·&nbsp; Built for developers who learn by building.
+</footer>
 
 </body>
 </html>
